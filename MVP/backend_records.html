@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KSR Backend — 기록 메타 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f9f8f4;
+    --bg-sunken: #f3f2ed;
+    --fg: #0a0a0a;
+    --fg-dim: #4a4a48;
+    --fg-faint: #8a8a86;
+    --fg-mute: #b8b6af;
+    --line: #e3e1d8;
+    --accent: #0a1d3a;
+    --gold: #b3893a;
+    --serif: "Cormorant Garamond", serif;
+    --sans: "Inter", "Pretendard", -apple-system, sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg-sunken);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Top bar ─────────────────────────────────── */
+  .bk-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--fg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 36px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .bk-bar .title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .bk-bar .title .sub {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin-left: 14px;
+  }
+  .bk-bar .status {
+    font-size: 11.5px;
+    color: var(--fg-faint);
+    letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  .bk-bar .status.dirty { color: var(--gold); }
+  .bk-actions { display: flex; gap: 10px; }
+  .bk-btn {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 11px 22px;
+    border: 1px solid var(--fg);
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .bk-btn:hover { background: var(--bg-soft); }
+  .bk-btn.primary { background: var(--fg); color: var(--bg); }
+  .bk-btn.primary:hover { background: var(--accent); }
+
+  /* ── Jump nav ────────────────────────────────── */
+  .bk-jump {
+    position: sticky;
+    top: 71px;
+    z-index: 90;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 36px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .bk-jump a {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--fg-dim);
+    text-decoration: none;
+    padding: 5px 11px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .bk-jump a:hover { border-color: var(--fg); color: var(--fg); }
+
+  /* ── Main ────────────────────────────────────── */
+  .bk-main { padding: 32px 36px 160px; max-width: 1500px; }
+  .bk-intro {
+    font-size: 12.5px;
+    color: var(--fg-dim);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    padding: 16px 20px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .bk-intro strong { color: var(--fg); }
+
+  .grp-head {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin: 48px 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--fg);
+    scroll-margin-top: 128px;
+  }
+  .grp-head:first-of-type { margin-top: 0; }
+
+  /* ── Event card · 스프레드시트 그리드 ───────────── */
+  .ev {
+    margin-top: 18px;
+    width: max-content;
+    max-width: 100%;
+    scroll-margin-top: 128px;
+  }
+  .ev > h3 {
+    margin: 0;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .ev > h3 .ekey {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--fg-mute);
+    font-weight: 400;
+  }
+  .rec-grid {
+    display: grid;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .rec-grid > div,
+  .rec-grid > input {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    min-width: 0;
+  }
+  /* 헤더 행 — 컬럼 라벨, 카드당 1회 */
+  .rec-grid .gh {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    background: var(--bg-soft);
+  }
+  /* 행 라벨 (WR/OR/AR/KR/WMR/KMR/ER) */
+  .rec-grid .rl {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    background: var(--bg-soft);
+  }
+  .rec-grid .rl .tag {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 10px;
+    color: var(--fg);
+  }
+  .rec-grid .rl .nm { color: var(--fg-dim); }
+  /* 입력 셀 */
+  .rec-grid input {
+    height: 30px;
+    border-top: 0;
+    border-left: 0;
+    border-radius: 0;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    padding: 6px 8px;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .rec-grid input.mono { font-family: var(--mono); }
+  .rec-grid input::placeholder { color: var(--fg-mute); }
+  .rec-grid input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: #fffdf6;
+    position: relative;
+    z-index: 2;
+  }
+  /* 국적 — 코드 칸 + 국기 칸 */
+  .rec-grid input.ctry-code { cursor: pointer; }
+  .rec-grid .ctry-flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    background: var(--bg);
+  }
+  .rec-grid .ctry-flag:hover { background: #fffdf6; }
+  /* 비올림픽 OR 안내 — 다른 셀과 동일 높이 */
+  .rec-grid .rec-na {
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 10.5px;
+    font-style: italic;
+    color: var(--fg-faint);
+    background: var(--bg-sunken);
+  }
+
+  /* ── 국적 선택 모달 ───────────────────────────── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.45);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--bg);
+    border: 1px solid var(--fg);
+    width: 460px;
+    max-width: 92vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-head .mh-title { font-family: var(--serif); font-size: 21px; font-weight: 500; }
+  .modal-head .mh-sub {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .modal-head .mh-x {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    font-size: 15px;
+    color: var(--fg-faint);
+    cursor: pointer;
+  }
+  .modal-head .mh-x:hover { color: var(--fg); }
+  .modal-search {
+    margin: 12px 18px 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .modal-search:focus { outline: none; border-color: var(--fg); background: #fffdf6; }
+  .modal-list { overflow-y: auto; padding: 0 10px 12px; }
+  .modal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .modal-item:last-child { border-bottom: 0; }
+  .modal-item:hover { background: var(--bg-soft); }
+  .modal-item .mi-flag { font-size: 21px; width: 30px; text-align: center; }
+  .modal-item .mi-en { color: var(--fg-faint); font-size: 11.5px; }
+  .modal-item .mi-code {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-mute);
+  }
+  .modal-empty { padding: 24px; text-align: center; color: var(--fg-faint); font-size: 12px; }
+
+  /* ── Save toast ──────────────────────────────── */
+  .bk-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--fg);
+    color: var(--bg);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    padding: 13px 26px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 200;
+  }
+  .bk-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header class="bk-bar">
+  <div class="title">KSR Backend<span class="sub">기록 메타 관리</span></div>
+  <div class="status" id="status">불러오는 중…</div>
+  <div class="bk-actions">
+    <button class="bk-btn" id="btn-csv-out">CSV 내보내기</button>
+    <button class="bk-btn" id="btn-csv-in">CSV 불러오기</button>
+    <button class="bk-btn" id="btn-cancel">취소</button>
+    <button class="bk-btn primary" id="btn-save">저장</button>
+  </div>
+</header>
+
+<nav class="bk-jump" id="jump"></nav>
+
+<main class="bk-main">
+  <div class="bk-intro">
+    <strong>WR / OR / AR / KR / WMR / KMR / ER</strong> 7가지 권위 기록을 종목별로 입력·수정합니다.
+    LCM(장수영장) 기록만 다룹니다. <strong>국적</strong> 칸을 누르면 국가 검색 모달이 열리고, 선택 시 국기가 함께 표시됩니다.
+    <strong>기록</strong>란은 숫자만 입력해도 자동 정형되고(<code>002091</code> → <code>00:20.91</code>),
+    <strong>작성일</strong>도 <code>20260518</code> → <code>2026-05-18</code> 로 맞춰집니다.
+    엑셀·구글시트에서 범위를 복사해 셀에 붙여넣기(Ctrl+V)하면 한 번에 채워지고,
+    상단 <strong>CSV 내보내기·불러오기</strong>로 표 단위 편집도 가능합니다.
+    <strong>저장</strong> 시 <code>event_meta.json</code> 이 다운로드됩니다.
+    50m 배영·평영·접영의 OR은 비올림픽 종목이라 입력란이 없습니다.
+  </div>
+  <div id="events"></div>
+</main>
+
+<input type="file" id="csv-file" accept=".csv,text/csv" hidden />
+
+<div class="modal-backdrop" id="ctry-modal">
+  <div class="modal" role="dialog" aria-label="국적 선택">
+    <div class="modal-head">
+      <span class="mh-title">국적 선택</span>
+      <span class="mh-sub">Country</span>
+      <button class="mh-x" id="ctry-close" type="button" aria-label="닫기">✕</button>
+    </div>
+    <input class="modal-search" id="ctry-search" type="text" placeholder="국가명 검색 — 한글 · 영문 · 코드" />
+    <div class="modal-list" id="ctry-list"></div>
+  </div>
+</div>
+
+<div class="bk-toast" id="toast">저장되었습니다</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const STORE_KEY = 'ksr_event_meta_v2';
+
+  // ── 종목 매트릭스 (LCM 전용) ──────────────────────
+  const GENDERS = [
+    { key: 'men',   label: '남자' },
+    { key: 'women', label: '여자' },
+  ];
+  const STROKES = [
+    { key: 'free',   label: '자유형',   dists: [50, 100, 200, 400, 800, 1500] },
+    { key: 'back',   label: '배영',     dists: [50, 100, 200] },
+    { key: 'breast', label: '평영',     dists: [50, 100, 200] },
+    { key: 'fly',    label: '접영',     dists: [50, 100, 200] },
+    { key: 'im',     label: '개인혼영', dists: [200, 400] },
+  ];
+
+  // ── 기록 종류 + 필드 정의 ─────────────────────────
+  const RECORD_TYPES = [
+    { key: 'wr',  tag: 'WR',  name: '세계기록' },
+    { key: 'or',  tag: 'OR',  name: '올림픽기록' },
+    { key: 'ar',  tag: 'AR',  name: '아시아기록' },
+    { key: 'kr',  tag: 'KR',  name: '한국기록' },
+    { key: 'wmr', tag: 'WMR', name: '세계마스터즈기록' },
+    { key: 'kmr', tag: 'KMR', name: '한국마스터즈기록' },
+    { key: 'er',  tag: 'ER',  name: '인핸스드게임기록' },
+  ];
+  // 모든 기록 행에 동일한 컬럼을 동일 순서로 노출 — 행 정렬 통일
+  const ALL_FIELDS = ['time','holder','country','year','date','ageGroup','region','meet','venue'];
+  const FLAG_W = '40px';   // 국기 셀 너비 (국적 코드 칸 옆)
+  const FIELD_DEF = {
+    time:     { label: '기록',   ph: '00:00.00',           w: '96px',  mono: true },
+    holder:   { label: '보유자', ph: '이름',                w: '138px', mono: false },
+    country:  { label: '국적',   ph: 'KOR',                 w: '56px',  mono: true },
+    year:     { label: '연도',   ph: '2024',                w: '56px',  mono: true },
+    date:     { label: '작성일', ph: '0000-00-00',          w: '104px', mono: true },
+    ageGroup: { label: '연령대', ph: '25-29',               w: '72px',  mono: true },
+    region:   { label: '지역',   ph: '도쿄',                w: '96px',  mono: false },
+    meet:     { label: '대회명', ph: 'World Championships', w: '144px', mono: false },
+    venue:    { label: '수영장', ph: '수영장명',             w: '144px', mono: false },
+  };
+
+  // ── 국가 목록 (IOC 코드 · ISO2 · 한글 · 영문) ──────
+  const COUNTRIES = [
+    { ioc:'KOR', iso:'KR', ko:'대한민국',       en:'South Korea' },
+    { ioc:'JPN', iso:'JP', ko:'일본',           en:'Japan' },
+    { ioc:'CHN', iso:'CN', ko:'중국',           en:'China' },
+    { ioc:'HKG', iso:'HK', ko:'홍콩',           en:'Hong Kong' },
+    { ioc:'TPE', iso:'TW', ko:'대만',           en:'Chinese Taipei' },
+    { ioc:'SGP', iso:'SG', ko:'싱가포르',       en:'Singapore' },
+    { ioc:'THA', iso:'TH', ko:'태국',           en:'Thailand' },
+    { ioc:'VIE', iso:'VN', ko:'베트남',         en:'Vietnam' },
+    { ioc:'MAS', iso:'MY', ko:'말레이시아',     en:'Malaysia' },
+    { ioc:'INA', iso:'ID', ko:'인도네시아',     en:'Indonesia' },
+    { ioc:'PHI', iso:'PH', ko:'필리핀',         en:'Philippines' },
+    { ioc:'IND', iso:'IN', ko:'인도',           en:'India' },
+    { ioc:'KAZ', iso:'KZ', ko:'카자흐스탄',     en:'Kazakhstan' },
+    { ioc:'UZB', iso:'UZ', ko:'우즈베키스탄',   en:'Uzbekistan' },
+    { ioc:'PRK', iso:'KP', ko:'북한',           en:'North Korea' },
+    { ioc:'IRI', iso:'IR', ko:'이란',           en:'Iran' },
+    { ioc:'QAT', iso:'QA', ko:'카타르',         en:'Qatar' },
+    { ioc:'UAE', iso:'AE', ko:'아랍에미리트',   en:'United Arab Emirates' },
+    { ioc:'KSA', iso:'SA', ko:'사우디아라비아', en:'Saudi Arabia' },
+    { ioc:'ISR', iso:'IL', ko:'이스라엘',       en:'Israel' },
+    { ioc:'USA', iso:'US', ko:'미국',           en:'United States' },
+    { ioc:'CAN', iso:'CA', ko:'캐나다',         en:'Canada' },
+    { ioc:'BRA', iso:'BR', ko:'브라질',         en:'Brazil' },
+    { ioc:'ARG', iso:'AR', ko:'아르헨티나',     en:'Argentina' },
+    { ioc:'MEX', iso:'MX', ko:'멕시코',         en:'Mexico' },
+    { ioc:'CHI', iso:'CL', ko:'칠레',           en:'Chile' },
+    { ioc:'COL', iso:'CO', ko:'콜롬비아',       en:'Colombia' },
+    { ioc:'CUB', iso:'CU', ko:'쿠바',           en:'Cuba' },
+    { ioc:'JAM', iso:'JM', ko:'자메이카',       en:'Jamaica' },
+    { ioc:'PUR', iso:'PR', ko:'푸에르토리코',   en:'Puerto Rico' },
+    { ioc:'GBR', iso:'GB', ko:'영국',           en:'Great Britain' },
+    { ioc:'FRA', iso:'FR', ko:'프랑스',         en:'France' },
+    { ioc:'GER', iso:'DE', ko:'독일',           en:'Germany' },
+    { ioc:'ITA', iso:'IT', ko:'이탈리아',       en:'Italy' },
+    { ioc:'ESP', iso:'ES', ko:'스페인',         en:'Spain' },
+    { ioc:'NED', iso:'NL', ko:'네덜란드',       en:'Netherlands' },
+    { ioc:'HUN', iso:'HU', ko:'헝가리',         en:'Hungary' },
+    { ioc:'SWE', iso:'SE', ko:'스웨덴',         en:'Sweden' },
+    { ioc:'RUS', iso:'RU', ko:'러시아',         en:'Russia' },
+    { ioc:'POL', iso:'PL', ko:'폴란드',         en:'Poland' },
+    { ioc:'ROU', iso:'RO', ko:'루마니아',       en:'Romania' },
+    { ioc:'UKR', iso:'UA', ko:'우크라이나',     en:'Ukraine' },
+    { ioc:'LTU', iso:'LT', ko:'리투아니아',     en:'Lithuania' },
+    { ioc:'GRE', iso:'GR', ko:'그리스',         en:'Greece' },
+    { ioc:'IRL', iso:'IE', ko:'아일랜드',       en:'Ireland' },
+    { ioc:'BEL', iso:'BE', ko:'벨기에',         en:'Belgium' },
+    { ioc:'AUT', iso:'AT', ko:'오스트리아',     en:'Austria' },
+    { ioc:'SUI', iso:'CH', ko:'스위스',         en:'Switzerland' },
+    { ioc:'CZE', iso:'CZ', ko:'체코',           en:'Czechia' },
+    { ioc:'DEN', iso:'DK', ko:'덴마크',         en:'Denmark' },
+    { ioc:'NOR', iso:'NO', ko:'노르웨이',       en:'Norway' },
+    { ioc:'FIN', iso:'FI', ko:'핀란드',         en:'Finland' },
+    { ioc:'POR', iso:'PT', ko:'포르투갈',       en:'Portugal' },
+    { ioc:'CRO', iso:'HR', ko:'크로아티아',     en:'Croatia' },
+    { ioc:'SRB', iso:'RS', ko:'세르비아',       en:'Serbia' },
+    { ioc:'SLO', iso:'SI', ko:'슬로베니아',     en:'Slovenia' },
+    { ioc:'SVK', iso:'SK', ko:'슬로바키아',     en:'Slovakia' },
+    { ioc:'BUL', iso:'BG', ko:'불가리아',       en:'Bulgaria' },
+    { ioc:'EST', iso:'EE', ko:'에스토니아',     en:'Estonia' },
+    { ioc:'LAT', iso:'LV', ko:'라트비아',       en:'Latvia' },
+    { ioc:'ISL', iso:'IS', ko:'아이슬란드',     en:'Iceland' },
+    { ioc:'TUR', iso:'TR', ko:'튀르키예',       en:'Türkiye' },
+    { ioc:'BLR', iso:'BY', ko:'벨라루스',       en:'Belarus' },
+    { ioc:'LUX', iso:'LU', ko:'룩셈부르크',     en:'Luxembourg' },
+    { ioc:'AUS', iso:'AU', ko:'호주',           en:'Australia' },
+    { ioc:'NZL', iso:'NZ', ko:'뉴질랜드',       en:'New Zealand' },
+    { ioc:'RSA', iso:'ZA', ko:'남아프리카공화국', en:'South Africa' },
+    { ioc:'EGY', iso:'EG', ko:'이집트',         en:'Egypt' },
+    { ioc:'TUN', iso:'TN', ko:'튀니지',         en:'Tunisia' },
+    { ioc:'MAR', iso:'MA', ko:'모로코',         en:'Morocco' },
+    { ioc:'ALG', iso:'DZ', ko:'알제리',         en:'Algeria' },
+    { ioc:'KEN', iso:'KE', ko:'케냐',           en:'Kenya' },
+    { ioc:'NGR', iso:'NG', ko:'나이지리아',     en:'Nigeria' },
+    { ioc:'ZIM', iso:'ZW', ko:'짐바브웨',       en:'Zimbabwe' },
+  ];
+  const COUNTRY_BY_IOC = {};
+  COUNTRIES.forEach(c => { COUNTRY_BY_IOC[c.ioc] = c; });
+  function flagEmoji(iso2) {
+    if (!iso2 || iso2.length !== 2) return '';
+    const A = 0x1F1E6;
+    return String.fromCodePoint(
+      A + iso2.toUpperCase().charCodeAt(0) - 65,
+      A + iso2.toUpperCase().charCodeAt(1) - 65
+    );
+  }
+
+  // 올림픽 정식 종목 여부 — 50m 배·평·접은 비올림픽
+  function isOlympic(strokeKey, dist) {
+    if (dist === 50 && strokeKey !== 'free') return false;
+    return true;
+  }
+
+  function eventKey(g, s, d) { return `${g}-${s}-${d}-lcm`; }
+  function eventLabel(gLabel, sLabel, d) { return `${gLabel} · ${sLabel} · ${d}M · LCM`; }
+
+  // ── 폼 렌더링 ─────────────────────────────────────
+  const eventsRoot = document.getElementById('events');
+  const jumpRoot = document.getElementById('jump');
+  let jumpHtml = '';
+  let html = '';
+  // 그리드 컬럼: 행라벨 + 각 필드 (국적은 코드칸 + 국기칸 2개)
+  const GRID_COLS = '144px ' + ALL_FIELDS.map(f =>
+    f === 'country' ? FIELD_DEF.country.w + ' ' + FLAG_W : FIELD_DEF[f].w
+  ).join(' ');
+  const NA_SPAN = ALL_FIELDS.length + 1;   // 국적이 2칸이므로 +1
+
+  GENDERS.forEach(g => {
+    STROKES.forEach(s => {
+      const groupId = `grp-${g.key}-${s.key}`;
+      jumpHtml += `<a href="#${groupId}">${g.label} ${s.label}</a>`;
+      html += `<h2 class="grp-head" id="${groupId}">${g.label} · ${s.label}</h2>`;
+
+      s.dists.forEach(d => {
+        const ek = eventKey(g.key, s.key, d);
+        html += `<section class="ev" id="ev-${ek}">`;
+        html += `<h3>${eventLabel(g.label, s.label, d)}<span class="ekey">${ek}</span></h3>`;
+        html += `<div class="rec-grid" style="grid-template-columns:${GRID_COLS}">`;
+
+        // 헤더 행 — 컬럼 라벨은 카드당 한 번만 (국적 헤더는 2칸 span)
+        html += `<div class="gh"></div>`;
+        ALL_FIELDS.forEach(f => {
+          const span = f === 'country' ? ' style="grid-column:span 2"' : '';
+          html += `<div class="gh"${span}>${FIELD_DEF[f].label}</div>`;
+        });
+
+        // 기록 행 (WR / OR / AR / KR / WMR / KMR / ER)
+        RECORD_TYPES.forEach(rt => {
+          html += `<div class="rl"><span class="tag">${rt.tag}</span><span class="nm">${rt.name}</span></div>`;
+          // OR은 비올림픽 종목(50m 배·평·접)에서 비활성
+          if (rt.key === 'or' && !isOlympic(s.key, d)) {
+            html += `<div class="rec-na" style="grid-column:span ${NA_SPAN}">비올림픽 종목 — 입력 불필요</div>`;
+            return;
+          }
+          ALL_FIELDS.forEach(f => {
+            const fd = FIELD_DEF[f];
+            const attrs = `data-event="${ek}" data-rec="${rt.key}" data-field="${f}"`;
+            if (f === 'country') {
+              html += `<input type="text" readonly class="mono ctry-code" placeholder="${fd.ph}" ${attrs} />`;
+              html += `<div class="ctry-flag"></div>`;
+            } else {
+              html += `<input type="text" placeholder="${fd.ph}" class="${fd.mono ? 'mono' : ''}" ${attrs} />`;
+            }
+          });
+        });
+
+        html += `</div></section>`;
+      });
+    });
+  });
+
+  jumpRoot.innerHTML = jumpHtml;
+  eventsRoot.innerHTML = html;
+
+  // ── 기본 데이터 시드 ──────────────────────────────
+  // 저장된 데이터가 없을 때 폼에 표시되는 기본값. 저장 시 event_meta.json 으로 출력.
+  const SEED = {
+    // ── 남자 ─────────────────────────────────────────
+    'men-free-50-lcm': {
+      wr:  { time: '00:20.88', holder: 'Cameron McEvoy', country: 'AUS', year: '2026', date: '2026-03-20', region: '선전', meet: 'China Open' },
+      or:  { time: '00:21.07', holder: 'Caeleb Dressel', country: 'USA', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '00:21.66', holder: '지유찬', country: 'KOR', year: '2025', date: '2025-08-01', region: '싱가포르', meet: 'World Championships' },
+      kr:  { time: '00:21.66', holder: '지유찬', country: 'KOR', year: '2025', date: '2025-08-01', region: '싱가포르', meet: 'World Championships' },
+      wmr: { time: '00:22.30', holder: 'Ari-Pekka Liukkonen', country: 'FIN', year: '2017', ageGroup: '25-29' },
+      er:  { time: '00:20.89', holder: 'Kristian Gkolomeev', country: 'GRE', year: '2025', region: '라스베이거스', meet: 'Enhanced Games' },
+    },
+    'men-free-100-lcm': {
+      wr:  { time: '00:46.40', holder: 'Pan Zhanle', country: 'CHN', year: '2024', date: '2024-07-31', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      or:  { time: '00:46.40', holder: 'Pan Zhanle', country: 'CHN', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '00:46.40', holder: 'Pan Zhanle', country: 'CHN', year: '2024', date: '2024-07-31', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      kr:  { time: '00:47.39', holder: '김영범', country: 'KOR', year: '2025', date: '2025-10-22', region: '부산', meet: 'Korean National Sports Festival' },
+      wmr: { time: '00:48.72', holder: 'Vladislav Grinev', country: 'RUS', ageGroup: '25-29' },
+    },
+    'men-free-200-lcm': {
+      wr:  { time: '01:42.00', holder: 'Paul Biedermann', country: 'GER', year: '2009', date: '2009-07-28', region: '로마', meet: 'World Championships' },
+      or:  { time: '01:42.96', holder: 'Michael Phelps', country: 'USA', year: '2008', region: '베이징', meet: 'Olympic Games', venue: 'Beijing National Aquatics Center' },
+      ar:  { time: '01:43.92', holder: '황선우', country: 'KOR', year: '2025', date: '2025-10-20', region: '부산', meet: 'Korean National Sports Festival' },
+      kr:  { time: '01:43.92', holder: '황선우', country: 'KOR', year: '2025', date: '2025-10-20', region: '부산', meet: 'Korean National Sports Festival' },
+      wmr: { time: '01:50.76', holder: 'David Alcolado Durango', country: 'ESP', year: '2017', ageGroup: '25-29' },
+    },
+    'men-free-400-lcm': {
+      wr:  { time: '03:39.96', holder: 'Lukas Märtens', country: 'GER', year: '2025', date: '2025-04-12', region: '스톡홀름', meet: 'Swim Open Stockholm' },
+      or:  { time: '03:40.14', holder: 'Sun Yang', country: 'CHN', year: '2012', region: '런던', meet: 'Olympic Games', venue: 'London Aquatics Centre' },
+      ar:  { time: '03:40.14', holder: 'Sun Yang', country: 'CHN', year: '2012', date: '2012-07-28', region: '런던', meet: 'Olympic Games', venue: 'London Aquatics Centre' },
+      kr:  { time: '03:41.53', holder: '박태환', country: 'KOR', year: '2010', date: '2010-11-16', region: '광저우', meet: 'Asian Games' },
+      wmr: { time: '04:00.96', holder: 'Alexander Fedororov', country: 'RUS', year: '2022', ageGroup: '25-29' },
+    },
+    'men-free-800-lcm': {
+      wr:  { time: '07:32.12', holder: 'Zhang Lin', country: 'CHN', year: '2009', date: '2009-07-29', region: '로마', meet: 'World Championships' },
+      or:  { time: '07:38.19', holder: 'Daniel Wiffen', country: 'IRL', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '07:32.12', holder: 'Zhang Lin', country: 'CHN', year: '2009', date: '2009-07-29', region: '로마', meet: 'World Championships' },
+      kr:  { time: '07:46.03', holder: '김우민', country: 'KOR', year: '2023', date: '2023-09-28', region: '항저우', meet: 'Asian Games' },
+      wmr: { time: '08:24.46', holder: 'David Heron', country: 'USA', year: '2022', ageGroup: '25-29' },
+    },
+    'men-free-1500-lcm': {
+      wr:  { time: '14:30.67', holder: 'Bobby Finke', country: 'USA', year: '2024', date: '2024-08-04', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      or:  { time: '14:30.67', holder: 'Bobby Finke', country: 'USA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '14:31.02', holder: 'Sun Yang', country: 'CHN', year: '2012', date: '2012-08-04', region: '런던', meet: 'Olympic Games', venue: 'London Aquatics Centre' },
+      kr:  { time: '14:47.38', holder: '박태환', country: 'KOR', year: '2012', date: '2012-02-12', region: '시드니', meet: 'NSW State Open Championships' },
+      wmr: { time: '15:49.04', holder: 'David Heron', country: 'USA', year: '2022', ageGroup: '25-29' },
+    },
+    'men-back-50-lcm': {
+      wr:  { time: '00:23.55', holder: 'Kliment Kolesnikov', country: 'RUS', year: '2023', date: '2023-07-27', region: '카잔', meet: 'Russian Cup' },
+      ar:  { time: '00:24.24', holder: 'Junya Koga', country: 'JPN', year: '2009', date: '2009-08-02', region: '로마', meet: 'World Championships' },
+      kr:  { time: '00:24.48', holder: '윤지환', country: 'KOR', year: '2025', date: '2025-03-27', region: '김천', meet: 'South Korean Championships' },
+      wmr: { time: '00:25.44', holder: 'Anton Butymov', country: 'RUS', year: '2016', ageGroup: '25-29' },
+    },
+    'men-back-100-lcm': {
+      wr:  { time: '00:51.60', holder: 'Thomas Ceccon', country: 'ITA', year: '2022', date: '2022-06-20', region: '부다페스트', meet: 'World Championships' },
+      or:  { time: '00:51.85', holder: 'Ryan Murphy', country: 'USA', year: '2016', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      ar:  { time: '00:51.86', holder: 'Xu Jiayu', country: 'CHN', year: '2017', date: '2017-04-12', region: '칭다오', meet: 'Chinese Championships' },
+      kr:  { time: '00:53.32', holder: '이주호', country: 'KOR', year: '2022', date: '2022-03-27', region: '김천', meet: 'South Korean Championships' },
+      wmr: { time: '00:55.09', holder: 'Ryota Maejima', country: 'JPN', year: '2021', ageGroup: '25-29' },
+    },
+    'men-back-200-lcm': {
+      wr:  { time: '01:51.92', holder: 'Aaron Peirsol', country: 'USA', year: '2009', date: '2009-07-31', region: '로마', meet: 'World Championships' },
+      or:  { time: '01:53.27', holder: 'Evgeny Rylov', country: 'RUS', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '01:52.51', holder: 'Ryosuke Irie', country: 'JPN', year: '2009', date: '2009-07-31', region: '로마', meet: 'World Championships' },
+      kr:  { time: '01:55.34', holder: '이주호', country: 'KOR', year: '2025', date: '2025-12-16', region: '브리즈번', meet: 'Queensland Championships' },
+      wmr: { time: '02:02.76', holder: 'Dmitrii Gorbunov', country: 'RUS', year: '2019', ageGroup: '25-29' },
+    },
+    'men-breast-50-lcm': {
+      wr:  { time: '00:25.95', holder: 'Adam Peaty', country: 'GBR', year: '2017', date: '2017-07-25', region: '부다페스트', meet: 'World Championships' },
+      ar:  { time: '00:26.20', holder: 'Qin Haiyang', country: 'CHN', year: '2023', date: '2023-07-25', region: '후쿠오카', meet: 'World Championships' },
+      kr:  { time: '00:26.75', holder: '최동열', country: 'KOR', year: '2025', date: '2025-10-22', region: '부산', meet: 'Korean National Sports Festival' },
+      wmr: { time: '00:27.21', holder: 'Kirill Strelnikov', country: 'RUS', year: '2021', ageGroup: '25-29' },
+    },
+    'men-breast-100-lcm': {
+      wr:  { time: '00:56.88', holder: 'Adam Peaty', country: 'GBR', year: '2019', date: '2019-07-21', region: '광주', meet: 'World Championships' },
+      or:  { time: '00:57.13', holder: 'Adam Peaty', country: 'GBR', year: '2016', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      ar:  { time: '00:57.69', holder: 'Qin Haiyang', country: 'CHN', year: '2023', date: '2023-07-24', region: '후쿠오카', meet: 'World Championships' },
+      kr:  { time: '00:59.28', holder: '최동열', country: 'KOR', year: '2023', date: '2023-09-25', region: '항저우', meet: 'Asian Games' },
+      wmr: { time: '01:00.39', holder: 'Kirill Strelnikov', country: 'RUS', year: '2021', ageGroup: '25-29' },
+    },
+    'men-breast-200-lcm': {
+      wr:  { time: '02:05.48', holder: 'Qin Haiyang', country: 'CHN', year: '2023', date: '2023-07-28', region: '후쿠오카', meet: 'World Championships' },
+      or:  { time: '02:05.85', holder: 'Léon Marchand', country: 'FRA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '02:05.48', holder: 'Qin Haiyang', country: 'CHN', year: '2023', date: '2023-07-28', region: '후쿠오카', meet: 'World Championships' },
+      kr:  { time: '02:08.59', holder: '조성재', country: 'KOR', year: '2020', date: '2020-11-17', region: '김천', meet: 'South Korean Championships' },
+      wmr: { time: '02:11.78', holder: 'Clark Burckle', country: 'USA', year: '2013', ageGroup: '25-29' },
+    },
+    'men-fly-50-lcm': {
+      wr:  { time: '00:22.27', holder: 'Andriy Govorov', country: 'UKR', year: '2018', date: '2018-07-01', region: '로마', meet: 'Sette Colli Trophy' },
+      ar:  { time: '00:22.93', holder: 'Joseph Schooling', country: 'SGP', year: '2017', date: '2017-07-23', region: '부다페스트', meet: 'World Championships' },
+      kr:  { time: '00:23.15', holder: '백인철', country: 'KOR', year: '2023', date: '2023-10-14', region: '목포', meet: 'Korean National Sports Festival' },
+      wmr: { time: '00:23.15', holder: 'Mikhail Vekovishchev', country: 'RUS', year: '2025', ageGroup: '25-29' },
+    },
+    'men-fly-100-lcm': {
+      wr:  { time: '00:49.45', holder: 'Caeleb Dressel', country: 'USA', year: '2021', date: '2021-07-31', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      or:  { time: '00:49.45', holder: 'Caeleb Dressel', country: 'USA', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '00:50.39', holder: 'Joseph Schooling', country: 'SGP', year: '2016', date: '2016-08-12', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      kr:  { time: '00:51.29', holder: '양재훈', country: 'KOR', year: '2025', date: '2025-10-22', region: '부산', meet: 'Korean National Sports Festival' },
+      wmr: { time: '00:52.20', holder: 'Mikhail Vekovishchev', country: 'RUS', year: '2025', ageGroup: '25-29' },
+    },
+    'men-fly-200-lcm': {
+      wr:  { time: '01:50.34', holder: 'Kristóf Milák', country: 'HUN', year: '2022', date: '2022-06-21', region: '부다페스트', meet: 'World Championships' },
+      or:  { time: '01:51.21', holder: 'Léon Marchand', country: 'FRA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '01:52.53', holder: 'Daiya Seto', country: 'JPN', year: '2020', date: '2020-01-18', region: '베이징', meet: 'Champions Swim Series' },
+      kr:  { time: '01:54.95', holder: '김민섭', country: 'KOR', year: '2024', date: '2024-03-23', region: '김천', meet: 'Korean Olympic Trials' },
+      wmr: { time: '02:00.74', holder: 'Aleksandr Pribytok', country: 'RUS', year: '2022', ageGroup: '25-29' },
+    },
+    'men-im-200-lcm': {
+      wr:  { time: '01:52.69', holder: 'Léon Marchand', country: 'FRA', year: '2025', date: '2025-07-30', region: '싱가포르', meet: 'World Championships' },
+      or:  { time: '01:54.06', holder: 'Léon Marchand', country: 'FRA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '01:54.62', holder: 'Wang Shun', country: 'CHN', year: '2023', date: '2023-09-24', region: '항저우', meet: 'Asian Games' },
+      kr:  { time: '01:57.66', holder: '황선우', country: 'KOR', year: '2025', date: '2025-10-21', region: '부산', meet: 'Korean National Sports Festival' },
+      wmr: { time: '02:03.62', holder: 'Dmitrii Gorbunov', country: 'RUS', year: '2019', ageGroup: '25-29' },
+    },
+    'men-im-400-lcm': {
+      wr:  { time: '04:02.50', holder: 'Léon Marchand', country: 'FRA', year: '2023', date: '2023-07-23', region: '후쿠오카', meet: 'World Championships' },
+      or:  { time: '04:02.95', holder: 'Léon Marchand', country: 'FRA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '04:06.05', holder: 'Kosuke Hagino', country: 'JPN', year: '2016', date: '2016-08-06', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      kr:  { time: '04:15.27', holder: '김민규', country: 'KOR', year: '2009', date: '2009-12-08', region: '홍콩', meet: 'East Asian Games' },
+      wmr: { time: '04:30.05', holder: 'D. Yabe', country: 'BRA', year: '2009', ageGroup: '25-29' },
+    },
+    // ── 여자 ─────────────────────────────────────────
+    'women-free-50-lcm': {
+      wr:  { time: '00:23.61', holder: 'Sarah Sjöström', country: 'SWE', year: '2023', date: '2023-07-29', region: '후쿠오카', meet: 'World Championships' },
+      or:  { time: '00:23.66', holder: 'Sarah Sjöström', country: 'SWE', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '00:23.97', holder: 'Liu Xiang', country: 'CHN', year: '2021', date: '2021-09-26', region: '시안', meet: 'National Games of China' },
+      kr:  { time: '00:24.97', holder: '허연경', country: 'KOR', year: '2023', date: '2023-10-15', region: '목포', meet: 'Korean National Sports Festival' },
+    },
+    'women-free-100-lcm': {
+      wr:  { time: '00:51.71', holder: 'Sarah Sjöström', country: 'SWE', year: '2017', date: '2017-07-23', region: '부다페스트', meet: 'World Championships' },
+      or:  { time: '00:51.96', holder: 'Emma McKeon', country: 'AUS', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '00:52.02', holder: 'Siobhan Haughey', country: 'HKG', year: '2023', date: '2023-10-08', region: '베를린', meet: 'World Cup' },
+      kr:  { time: '00:54.49', holder: '허연경', country: 'KOR', year: '2023', date: '2023-11-25', region: '김천', meet: 'Korean National Trials' },
+    },
+    'women-free-200-lcm': {
+      wr:  { time: '01:52.23', holder: 'Ariarne Titmus', country: 'AUS', year: '2024', date: '2024-06-12', region: '브리즈번', meet: 'Australian Olympic Trials' },
+      or:  { time: '01:53.27', holder: "Mollie O'Callaghan", country: 'AUS', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '01:53.92', holder: 'Siobhan Haughey', country: 'HKG', year: '2021', date: '2021-07-28', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      kr:  { time: '01:58.00', holder: '조현주', country: 'KOR', year: '2026', date: '2026-03-27', region: '김천', meet: 'South Korean Championships' },
+      wmr: { time: '02:02.06', holder: 'Jenna Campbell', country: 'USA', year: '2024', ageGroup: '25-29' },
+    },
+    'women-free-400-lcm': {
+      wr:  { time: '03:54.18', holder: 'Summer McIntosh', country: 'CAN', year: '2025', date: '2025-06-07', region: '빅토리아', meet: 'Canadian Trials' },
+      or:  { time: '03:56.46', holder: 'Katie Ledecky', country: 'USA', year: '2016', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      ar:  { time: '03:58.21', holder: 'Li Bingjie', country: 'CHN', year: '2025', date: '2025-07-27', region: '싱가포르', meet: 'World Championships' },
+      kr:  { time: '04:09.69', holder: '한다경', country: 'KOR', year: '2025', date: '2025-10-21', region: '부산', meet: 'Korean National Sports Festival' },
+    },
+    'women-free-800-lcm': {
+      wr:  { time: '08:04.12', holder: 'Katie Ledecky', country: 'USA', year: '2025', date: '2025-05-03', region: '포트로더데일', meet: 'TYR Pro Swim Series' },
+      or:  { time: '08:04.79', holder: 'Katie Ledecky', country: 'USA', year: '2016', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      ar:  { time: '08:13.31', holder: 'Li Bingjie', country: 'CHN', year: '2023', date: '2023-07-29', region: '후쿠오카', meet: 'World Championships' },
+      kr:  { time: '08:35.62', holder: '한다경', country: 'KOR', year: '2026', date: '2026-03-25', region: '김천', meet: 'South Korean Championships' },
+    },
+    'women-free-1500-lcm': {
+      wr:  { time: '15:20.48', holder: 'Katie Ledecky', country: 'USA', year: '2018', date: '2018-05-16', region: '인디애나폴리스', meet: 'TYR Pro Swim Series' },
+      or:  { time: '15:30.02', holder: 'Katie Ledecky', country: 'USA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '15:41.49', holder: 'Wang Jianjiahe', country: 'CHN', year: '2021', date: '2021-07-26', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      kr:  { time: '16:26.67', holder: '한다경', country: 'KOR', year: '2021', date: '2021-05-13', region: '제주', meet: 'Korean Olympic Trials' },
+    },
+    'women-back-50-lcm': {
+      wr:  { time: '00:26.86', holder: 'Kaylee McKeown', country: 'AUS', year: '2023', date: '2023-10-20', region: '부다페스트', meet: 'World Cup' },
+      ar:  { time: '00:26.98', holder: 'Liu Xiang', country: 'CHN', year: '2018', date: '2018-08-21', region: '자카르타', meet: 'Asian Games' },
+      kr:  { time: '00:27.71', holder: '김승원', country: 'KOR', year: '2025', date: '2025-03-27', region: '김천', meet: 'South Korean Championships' },
+    },
+    'women-back-100-lcm': {
+      wr:  { time: '00:57.13', holder: 'Regan Smith', country: 'USA', year: '2024', date: '2024-06-18', region: '인디애나폴리스', meet: 'U.S. Olympic Trials' },
+      or:  { time: '00:57.28', holder: 'Regan Smith', country: 'USA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '00:58.70', holder: 'Aya Terakawa', country: 'JPN', year: '2013', date: '2013-08-04', region: '바르셀로나', meet: 'World Championships' },
+      kr:  { time: '00:59.56', holder: '이은지', country: 'KOR', year: '2025', date: '2025-06-15', region: '광주', meet: 'Gwangju Championships' },
+    },
+    'women-back-200-lcm': {
+      wr:  { time: '02:03.14', holder: 'Kaylee McKeown', country: 'AUS', year: '2023', date: '2023-03-10', region: '시드니', meet: 'NSW State Championships' },
+      or:  { time: '02:03.73', holder: 'Kaylee McKeown', country: 'AUS', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '02:06.46', holder: 'Zhao Jing', country: 'CHN', year: '2010', date: '2010-11-14', region: '광저우', meet: 'Asian Games' },
+      kr:  { time: '02:08.29', holder: '이은지', country: 'KOR', year: '2025', date: '2025-07-18', region: '베를린', meet: 'World University Games' },
+    },
+    'women-breast-50-lcm': {
+      wr:  { time: '00:29.16', holder: 'Rūta Meilutytė', country: 'LTU', year: '2023', date: '2023-07-30', region: '후쿠오카', meet: 'World Championships' },
+      ar:  { time: '00:29.44', holder: 'Tang Qianting', country: 'CHN', year: '2026', date: '2026-03-19' },
+      kr:  { time: '00:31.07', holder: '김달은', country: 'KOR', year: '2009', date: '2009-10-25', region: '대전', meet: 'Korean National Sports Festival' },
+    },
+    'women-breast-100-lcm': {
+      wr:  { time: '01:04.13', holder: 'Lilly King', country: 'USA', year: '2017', date: '2017-07-25', region: '부다페스트', meet: 'World Championships' },
+      or:  { time: '01:04.82', holder: 'Tatjana Smith', country: 'RSA', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '01:04.39', holder: 'Tang Qianting', country: 'CHN', year: '2024', date: '2024-04-21', region: '선전', meet: 'Chinese Championships' },
+      kr:  { time: '01:07.44', holder: '김혜진', country: 'KOR', year: '2018', date: '2018-04-27', region: '광주', meet: 'South Korean Championships' },
+    },
+    'women-breast-200-lcm': {
+      wr:  { time: '02:17.55', holder: 'Evgeniia Chikunova', country: 'RUS', year: '2023', date: '2023-04-21', region: '카잔', meet: 'Russian Championships' },
+      or:  { time: '02:18.95', holder: 'Tatjana Smith', country: 'RSA', year: '2021', region: '도쿄', meet: 'Olympic Games', venue: 'Tokyo Aquatics Centre' },
+      ar:  { time: '02:19.65', holder: 'Rie Kaneto', country: 'JPN', year: '2016', date: '2016-04-09', region: '도쿄', meet: 'Japanese Championships' },
+      kr:  { time: '02:23.21', holder: '문수아', country: 'KOR', year: '2025', date: '2025-10-20', region: '부산', meet: 'Korean National Sports Festival' },
+    },
+    'women-fly-50-lcm': {
+      wr:  { time: '00:24.43', holder: 'Sarah Sjöström', country: 'SWE', year: '2014', date: '2014-07-05', region: '보로스', meet: 'Swedish Championships' },
+      ar:  { time: '00:25.05', holder: 'Zhang Yufei', country: 'CHN', year: '2023', date: '2023-07-29', region: '후쿠오카', meet: 'World Championships' },
+      kr:  { time: '00:26.26', holder: '정소은', country: 'KOR', year: '2019', date: '2019-11-02', region: '카잔', meet: 'World Cup' },
+    },
+    'women-fly-100-lcm': {
+      wr:  { time: '00:54.33', holder: 'Gretchen Walsh', country: 'USA', year: '2026', date: '2026-05-02', region: '포트로더데일', meet: 'TYR Pro Swim Series' },
+      or:  { time: '00:55.38', holder: 'Gretchen Walsh', country: 'USA', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '00:55.62', holder: 'Zhang Yufei', country: 'CHN', year: '2020', date: '2020-09-29', region: '칭다오', meet: 'Chinese Championships' },
+      kr:  { time: '00:57.07', holder: '안세현', country: 'KOR', year: '2017', date: '2017-07-24', region: '부다페스트', meet: 'World Championships' },
+    },
+    'women-fly-200-lcm': {
+      wr:  { time: '02:01.81', holder: 'Liu Zige', country: 'CHN', year: '2009', date: '2009-10-21', region: '지난', meet: 'National Games of China' },
+      or:  { time: '02:03.03', holder: 'Summer McIntosh', country: 'CAN', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '02:01.81', holder: 'Liu Zige', country: 'CHN', year: '2009', date: '2009-10-21', region: '지난', meet: 'National Games of China' },
+      kr:  { time: '02:06.67', holder: '안세현', country: 'KOR', year: '2017', date: '2017-07-27', region: '부다페스트', meet: 'World Championships' },
+    },
+    'women-im-200-lcm': {
+      wr:  { time: '02:05.70', holder: 'Summer McIntosh', country: 'CAN', year: '2025', date: '2025-06-09', region: '빅토리아', meet: 'Canadian Trials' },
+      or:  { time: '02:06.56', holder: 'Summer McIntosh', country: 'CAN', year: '2024', region: '파리', meet: 'Olympic Games', venue: 'Paris La Défense Arena' },
+      ar:  { time: '02:07.41', holder: 'Yu Zidi', country: 'CHN', year: '2025', date: '2025-11-11', region: '선전', meet: 'National Games of China' },
+      kr:  { time: '02:08.34', holder: '김서영', country: 'KOR', year: '2018', date: '2018-08-24', region: '자카르타', meet: 'Asian Games' },
+    },
+    'women-im-400-lcm': {
+      wr:  { time: '04:23.65', holder: 'Summer McIntosh', country: 'CAN', year: '2025', date: '2025-06-11', region: '빅토리아', meet: 'Canadian Trials' },
+      or:  { time: '04:26.36', holder: 'Katinka Hosszú', country: 'HUN', year: '2016', region: '리우데자네이루', meet: 'Olympic Games', venue: 'Olympic Aquatics Stadium' },
+      ar:  { time: '04:28.43', holder: 'Ye Shiwen', country: 'CHN', year: '2012', date: '2012-07-28', region: '런던', meet: 'Olympic Games', venue: 'London Aquatics Centre' },
+      kr:  { time: '04:35.93', holder: '김서영', country: 'KOR', year: '2017', date: '2017-05-12', region: '김천', meet: 'Korean World Trials' },
+    },
+  };
+
+  // ── 데이터 입출력 ─────────────────────────────────
+  const statusEl = document.getElementById('status');
+  const inputs = () => document.querySelectorAll('#events input[data-event]');
+
+  function collect() {
+    const data = {};
+    inputs().forEach(inp => {
+      const { event, rec, field } = inp.dataset;
+      const v = inp.value.trim();
+      if (!v) return;
+      data[event] = data[event] || {};
+      data[event][rec] = data[event][rec] || {};
+      data[event][rec][field] = v;
+    });
+    return data;
+  }
+
+  function fill(data) {
+    inputs().forEach(inp => {
+      const { event, rec, field } = inp.dataset;
+      inp.value = (data[event] && data[event][rec] && data[event][rec][field]) || '';
+    });
+    syncFlags();
+  }
+
+  // ── 국기 동기화 — 국적 코드 칸 옆 국기 셀 갱신 ──────
+  function syncFlag(codeInput) {
+    const flag = codeInput.nextElementSibling;
+    if (!flag || !flag.classList.contains('ctry-flag')) return;
+    const c = COUNTRY_BY_IOC[(codeInput.value || '').trim().toUpperCase()];
+    flag.textContent = c ? flagEmoji(c.iso) : '';
+    flag.title = c ? `${c.ko} (${c.en})` : '';
+  }
+  function syncFlags() {
+    document.querySelectorAll('#events input.ctry-code').forEach(syncFlag);
+  }
+
+  // ── 입력 자동 정형 ────────────────────────────────
+  // 기록: 숫자만 입력해도 mm:ss.dd 로 정형 (0000 → 00:00.00, 000000 → 00:00.00)
+  function normalizeTime(raw) {
+    let d = String(raw).replace(/\D/g, '');
+    if (d.length >= 3 && d.length <= 6) {
+      d = d.padStart(6, '0');
+      return `${d.slice(0,2)}:${d.slice(2,4)}.${d.slice(4)}`;
+    }
+    if (d.length === 7 || d.length === 8) {
+      d = d.padStart(8, '0');
+      return `${d.slice(0,2)}:${d.slice(2,4)}:${d.slice(4,6)}.${d.slice(6)}`;
+    }
+    return String(raw).trim();
+  }
+  // 작성일: 숫자 8자리 입력 시 YYYY-MM-DD 로 정형 (20260518 → 2026-05-18)
+  function normalizeDate(raw) {
+    const d = String(raw).replace(/\D/g, '');
+    if (d.length === 8) return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6)}`;
+    return String(raw).trim();
+  }
+
+  function loadFromStore() {
+    let data = null;
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { data = null; }
+    // 저장된 데이터가 없거나 비어 있으면 기본 시드로 폴백
+    if (!data || !Object.keys(data).length) data = SEED;
+    fill(data);
+    markClean();
+  }
+
+  function markDirty() {
+    statusEl.textContent = '저장되지 않은 수정 있음';
+    statusEl.classList.add('dirty');
+  }
+  function markClean() {
+    const saved = localStorage.getItem(STORE_KEY);
+    statusEl.textContent = saved
+      ? `마지막 저장: ${localStorage.getItem(STORE_KEY + '_ts') || '—'}`
+      : '기본 데이터 표시 중 — 저장 시 event_meta.json 생성';
+    statusEl.classList.remove('dirty');
+  }
+
+  function save() {
+    const data = collect();
+    const ts = new Date().toLocaleString('ko-KR');
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORE_KEY + '_ts', ts);
+    // event_meta.json 다운로드
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'event_meta.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    markClean();
+    showToast('저장 완료 · event_meta.json 다운로드됨');
+  }
+
+  function cancel() {
+    if (statusEl.classList.contains('dirty')) {
+      if (!confirm('수정한 내용을 버리고 마지막 저장 상태로 되돌립니다.')) return;
+    }
+    loadFromStore();
+    showToast('마지막 저장 상태로 되돌렸습니다');
+  }
+
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  // ── 국적 선택 모달 ───────────────────────────────
+  const ctryModal  = document.getElementById('ctry-modal');
+  const ctrySearch = document.getElementById('ctry-search');
+  const ctryList   = document.getElementById('ctry-list');
+  let modalTarget = null;
+
+  function renderCountryList(q) {
+    q = (q || '').trim().toLowerCase();
+    const items = COUNTRIES.filter(c =>
+      !q || c.ko.toLowerCase().includes(q) || c.en.toLowerCase().includes(q) || c.ioc.toLowerCase().includes(q));
+    if (!items.length) { ctryList.innerHTML = '<div class="modal-empty">검색 결과 없음</div>'; return; }
+    ctryList.innerHTML = items.map(c =>
+      `<button type="button" class="modal-item" data-ioc="${c.ioc}">`
+      + `<span class="mi-flag">${flagEmoji(c.iso)}</span>`
+      + `<span class="mi-ko">${c.ko}</span>`
+      + `<span class="mi-en">${c.en}</span>`
+      + `<span class="mi-code">${c.ioc}</span></button>`).join('');
+  }
+  function openCountryModal(codeInput) {
+    if (!codeInput) return;
+    modalTarget = codeInput;
+    ctrySearch.value = '';
+    renderCountryList('');
+    ctryModal.classList.add('show');
+    ctrySearch.focus();
+  }
+  function closeCountryModal() {
+    ctryModal.classList.remove('show');
+    modalTarget = null;
+  }
+  ctrySearch.addEventListener('input', () => renderCountryList(ctrySearch.value));
+  ctryList.addEventListener('click', (e) => {
+    const btn = e.target.closest('.modal-item');
+    if (!btn || !modalTarget) return;
+    modalTarget.value = btn.dataset.ioc;
+    syncFlag(modalTarget);
+    markDirty();
+    closeCountryModal();
+  });
+  document.getElementById('ctry-close').addEventListener('click', closeCountryModal);
+  ctryModal.addEventListener('mousedown', (e) => { if (e.target === ctryModal) closeCountryModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && ctryModal.classList.contains('show')) closeCountryModal();
+  });
+
+  // ── 엑셀 붙여넣기 (카드 단위) ──────────────────────
+  function pasteIntoCard(anchor, grid2d) {
+    const card = anchor.closest('.ev');
+    if (!card) return;
+    const recIds = [], byRec = {};
+    card.querySelectorAll('input[data-event]').forEach(inp => {
+      const r = inp.dataset.rec;
+      if (!byRec[r]) { byRec[r] = []; recIds.push(r); }
+      byRec[r].push(inp);
+    });
+    const matrix = recIds.map(r => byRec[r]);
+    let ar = -1, ac = -1;
+    for (let i = 0; i < matrix.length; i++) {
+      const j = matrix[i].indexOf(anchor);
+      if (j >= 0) { ar = i; ac = j; break; }
+    }
+    if (ar < 0) return;
+    grid2d.forEach((row, dr) => {
+      const trow = matrix[ar + dr];
+      if (!trow) return;
+      row.forEach((val, dc) => {
+        const ti = trow[ac + dc];
+        if (!ti) return;
+        let v = String(val).trim();
+        if (ti.dataset.field === 'time') v = normalizeTime(v);
+        else if (ti.dataset.field === 'date') v = normalizeDate(v);
+        ti.value = v;
+        if (ti.dataset.field === 'country') syncFlag(ti);
+      });
+    });
+    markDirty();
+  }
+
+  // ── CSV 내보내기 / 불러오기 ───────────────────────
+  const CSV_COLS = ['time','holder','country','year','date','ageGroup','region','meet','venue'];
+  function csvEscape(v) {
+    v = (v == null) ? '' : String(v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+  function exportCSV() {
+    const map = {}, order = [];
+    inputs().forEach(inp => {
+      const k = inp.dataset.event + '|' + inp.dataset.rec;
+      if (!map[k]) { map[k] = { event: inp.dataset.event, rec: inp.dataset.rec }; order.push(k); }
+      map[k][inp.dataset.field] = inp.value;
+    });
+    let csv = 'event_key,record,' + CSV_COLS.join(',') + '\n';
+    order.forEach(k => {
+      const r = map[k];
+      csv += [r.event, r.rec].concat(CSV_COLS.map(c => csvEscape(r[c] || ''))).join(',') + '\n';
+    });
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'event_meta.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('CSV 내보내기 완료 · event_meta.csv');
+  }
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (c !== '\r') cell += c;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function importCSV(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result).replace(/^﻿/, '');
+      const rows = parseCSV(text);
+      let n = 0;
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r || r.length < 2 || !r[0]) continue;
+        const sel = `#events input[data-event="${r[0].trim()}"][data-rec="${r[1].trim()}"]`;
+        document.querySelectorAll(sel).forEach(inp => {
+          const idx = CSV_COLS.indexOf(inp.dataset.field);
+          if (idx >= 0 && r[idx + 2] !== undefined) { inp.value = r[idx + 2]; n++; }
+        });
+      }
+      syncFlags();
+      markDirty();
+      showToast(n ? `CSV 불러오기 완료 · ${n}칸 반영` : 'CSV에서 일치하는 항목 없음');
+    };
+    reader.readAsText(file);
+  }
+
+  // ── 이벤트 바인딩 ─────────────────────────────────
+  document.getElementById('btn-save').addEventListener('click', save);
+  document.getElementById('btn-cancel').addEventListener('click', cancel);
+  document.getElementById('btn-csv-out').addEventListener('click', exportCSV);
+  const csvFile = document.getElementById('csv-file');
+  document.getElementById('btn-csv-in').addEventListener('click', () => csvFile.click());
+  csvFile.addEventListener('change', () => {
+    if (csvFile.files && csvFile.files[0]) importCSV(csvFile.files[0]);
+    csvFile.value = '';
+  });
+  eventsRoot.addEventListener('input', markDirty);
+  eventsRoot.addEventListener('change', (e) => {
+    const inp = e.target;
+    if (!inp || inp.tagName !== 'INPUT' || !inp.dataset.field) return;
+    if (inp.dataset.field === 'time') inp.value = normalizeTime(inp.value);
+    else if (inp.dataset.field === 'date') inp.value = normalizeDate(inp.value);
+  });
+  eventsRoot.addEventListener('click', (e) => {
+    const code = e.target.closest('input.ctry-code');
+    if (code) { openCountryModal(code); return; }
+    const flag = e.target.closest('.ctry-flag');
+    if (flag) openCountryModal(flag.previousElementSibling);
+  });
+  eventsRoot.addEventListener('paste', (e) => {
+    const anchor = e.target.closest('input[data-event]');
+    if (!anchor) return;
+    const text = (e.clipboardData || window.clipboardData).getData('text');
+    if (!text || (text.indexOf('\t') < 0 && text.indexOf('\n') < 0)) return;
+    e.preventDefault();
+    const grid2d = text.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(r => r.split('\t'));
+    pasteIntoCard(anchor, grid2d);
+  });
+  window.addEventListener('beforeunload', (e) => {
+    if (statusEl.classList.contains('dirty')) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  loadFromStore();
+})();
+</script>
+
+</body>
+</html>

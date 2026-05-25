@@ -1,0 +1,1217 @@
+[
+{
+  "page": {
+    "eyebrow": {
+      "seal": "序",
+      "subtitle": "마음을 나누는 한 마디",
+      "pagination": {
+        "current": 1,
+        "total": 15
+      }
+    },
+    "grid": {
+      "left": {
+        "hero": {
+          "lines": ["하루를", "기분 좋게\u00a0만드는", "한 마디"],
+          "emphasis": "한 마디"
+        },
+        "quotes": [
+          "감사합니다",
+          "수고하세요",
+          "건강하세요"
+        ]
+      },
+      "right": {
+        "essay": [
+          "사람의 말이라는 것은\n참 중요한 것 같습니다.",
+          "나의 무의식적인 말이 상대에게는\n평생 남을 상처가 될 수도 있고,\n또 어떤 이에게는 작은 한마디가\n하루의 응원이 되기도 합니다.",
+          "말을 하기 전에 한 번 더 생각해 보면 어떨까요.\n내가 상대보다 똑똑해서 가르치려는 것이 아니라,\n작은 마음을 나누려는 마음가짐이\n살아가는 데 더 가치가 있다고 생각합니다.",
+          "말은 자신의 얼굴을 나타낸다고 하지 않습니까.\n웃음으로 대한 말, 웃음이 되돌아오는 법입니다."
+        ],
+        "closer": "오늘 하루는 어제보다 더 행복한 날 되세요."
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 1
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "壹",
+      "subtitle": "피할 수 없는 인생의 사실",
+      "pagination": {
+        "current": 2,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "피할 수 없는 인생의 다섯 가지 사실",
+      "emphasis": "인생의 다섯 가지 사실"
+    },
+    "cards": [
+      {
+        "num": "01",
+        "heading": "살아가는 데는\n돈이 필요합니다",
+        "body": "돈 없이 사는 것은 불가능합니다. 내가 떠난 뒤에도 남은 가족은 경제 문제를 피할 수 없습니다."
+      },
+      {
+        "num": "02",
+        "heading": "보통 사람이 큰 재산을\n모으기는 어렵습니다",
+        "body": "저축으로 재산을 모으려면 노력과 시간이 필요합니다. 그러나 인생은 우리를 기다려 주지 않습니다."
+      },
+      {
+        "num": "03",
+        "heading": "우리는 모두\n세상을 떠납니다",
+        "body": "언제 죽을지는 아무도 모릅니다. 건강하고 단단해 보이는 사람도 뜻밖의 일을 만날 수 있습니다."
+      },
+      {
+        "num": "04",
+        "heading": "언젠가는 보험에\n가입할 수 없게 됩니다",
+        "body": "건강과 나이는 기다려 주지 않습니다. 결국 보험 가입 자체가 어려워지는 시기가 옵니다."
+      },
+      {
+        "num": "05",
+        "heading": "미래 대비에는\n오늘의 준비가 필요합니다",
+        "body": "내일 일은 누구도 예측할 수 없습니다. 지금의 준비 없이는 어떤 것도 미리 마련할 수 없습니다."
+      }
+    ],
+    "callout": {
+      "text": "만약 나에게 무슨 일이 생길 것을 알 수 있다면,  사랑하는 가족을 위해 가장 먼저 무엇을 하시겠습니까?",
+      "bgColor": "#b04a32"
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 2
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "貳",
+      "subtitle": "기존 가입 보험 분석",
+      "pagination": {
+        "current": 3,
+        "total": 15
+      }
+    },
+    "title": "기존 가입 보험 분석",
+    "subtitle": "여러 보험사 상품의 전체 보장 구조를 살펴본 결과, 다음과 같은 다섯 가지 특징이 확인되었습니다.",
+    "body": {
+      "summary": {
+        "label": "진단 결과 요약",
+        "heading": "보험 개수는 충분하지만,\n핵심 보장이 분산되어 있습니다.",
+        "body": "현재 가입 보험은 기본적인 질병·상해 보장은 일정 부분 갖추고 있으나, 우선순위·치료 활용성·노후 리스크 측면에서는 재정리가 필요한 상태입니다.",
+        "verdict": {
+          "text": "핵심 질환 중심으로 보장 구조를 다시 점검할 필요가 있습니다.",
+          "emphasis": "핵심 질환 중심"
+        }
+      },
+      "findings": [
+        {
+          "num": "01",
+          "heading": "보험사별로 보장이 분산되어 있음",
+          "body": "여러 회사에 나누어져 있어 범위는 넓지만, 핵심 보장이 정리되지 않은 상태입니다."
+        },
+        {
+          "num": "02",
+          "heading": "과거 상품 기준의 보장 구조",
+          "body": "판매 당시 기준 상품으로 설계되어, 최신 의료 환경(표적항암·중입자 등) 반영이 제한적입니다."
+        },
+        {
+          "num": "03",
+          "heading": "생활형 특약 비중이 높은 구조",
+          "body": "소액·반복 지급형 특약 비중이 높아 보험료 대비 체감 보장 효율이 낮아질 수 있습니다."
+        },
+        {
+          "num": "04",
+          "heading": "갱신형 구조의 유지 부담",
+          "body": "연령 증가에 따라 보험료가 상승하며, 고령 시점에는 유지 가능성 자체가 중요해집니다."
+        },
+        {
+          "num": "05",
+          "heading": "기본 보장 범위는 일정 수준 확보",
+          "body": "다만 우선순위·실제 치료 활용성·간병 대비 측면에서는 추가 점검이 필요합니다."
+        }
+      ]
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 3
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "貳",
+      "subtitle": "기존 가입 보험 분석",
+      "pagination": {
+        "current": 3,
+        "total": 15
+      }
+    },
+    "title": "기존 가입 보험 분석",
+    "subtitle": "여러 보험사 상품의 전체 보장 구조를 살펴본 결과, 다음과 같은 다섯 가지 특징이 확인되었습니다.",
+    "body": {
+      "summary": {
+        "label": "진단 결과 요약",
+        "heading": "보험 개수는 충분하지만,\n핵심 보장이 분산되어 있습니다.",
+        "body": "현재 가입 보험은 기본적인 질병·상해 보장은 일정 부분 갖추고 있으나, 우선순위·치료 활용성·노후 리스크 측면에서는 재정리가 필요한 상태입니다.",
+        "verdict": {
+          "text": "핵심 질환 중심으로 보장 구조를 다시 점검할 필요가 있습니다.",
+          "emphasis": "핵심 질환 중심"
+        }
+      },
+      "findings": [
+        {
+          "num": "01",
+          "heading": "보험사별로 보장이 분산되어 있음",
+          "body": "여러 회사에 나누어져 있어 범위는 넓지만, 핵심 보장이 정리되지 않은 상태입니다."
+        },
+        {
+          "num": "02",
+          "heading": "과거 상품 기준의 보장 구조",
+          "body": "판매 당시 기준 상품으로 설계되어, 최신 의료 환경(표적항암·중입자 등) 반영이 제한적입니다."
+        },
+        {
+          "num": "03",
+          "heading": "생활형 특약 비중이 높은 구조",
+          "body": "소액·반복 지급형 특약 비중이 높아 보험료 대비 체감 보장 효율이 낮아질 수 있습니다."
+        },
+        {
+          "num": "04",
+          "heading": "갱신형 구조의 유지 부담",
+          "body": "연령 증가에 따라 보험료가 상승하며, 고령 시점에는 유지 가능성 자체가 중요해집니다."
+        },
+        {
+          "num": "05",
+          "heading": "기본 보장 범위는 일정 수준 확보",
+          "body": "다만 우선순위·실제 치료 활용성·간병 대비 측면에서는 추가 점검이 필요합니다."
+        }
+      ]
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 3
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "肆",
+      "subtitle": "Bespoke Protection Blueprint",
+      "pagination": {
+        "current": 5,
+        "total": 15
+      }
+    },
+    "cover": {
+      "emblem": {
+        "type": "svg",
+        "viewBox": "0 0 200 200",
+        "stroke": "#b7975a",
+        "strokeWidth": 1.4,
+        "elements": [
+          { "shape": "circle", "cx": 80,  "cy": 80,  "r": 50 },
+          { "shape": "circle", "cx": 120, "cy": 80,  "r": 50 },
+          { "shape": "circle", "cx": 100, "cy": 115, "r": 50 },
+          { "shape": "path", "d": "M 60 145 Q 100 200 140 145", "strokeWidth": 1.8 }
+        ]
+      },
+      "title": "추한복 고객님을 위한 노후 리스크 대비\n맞춤형 통합 보장 블루프린트",
+      "description": "단일 상품의 한계를 극복하고 4개사의 강점만을 결합한\n'무결점 가족 보호망' 제안서"
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 5
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "伍",
+      "subtitle": "보험의 진정한 목적",
+      "pagination": {
+        "current": 6,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "단순한 보험 가입이 아닌,\n가족의 존엄과 경제적 안정을 지키는 방패입니다",
+      "emphasis": "가족의 존엄과 경제적 안정"
+    },
+    "body": {
+      "missionCard": {
+        "text": "추한복 고객님 연령대에서 보험의 진정한 목적은 단순한 가입이 아닙니다. 가장 중요한 것은 큰 병이 발생했을 때 가족의 경제적 부담을 완전히 소거하고, 돈 때문에 최선의 치료 선택을 포기하지 않도록 만드는 '실제적 방어력'입니다.",
+        "emphases": ["경제적 부담을 완전히 소거", "'실제적 방어력'"]
+      },
+      "pillars": [
+        {
+          "heading": "가족 부담 감소",
+          "body": "가족의 경제적 붕괴를 방지하는 정밀한 방어막",
+          "icon": {
+            "viewBox": "0 0 100 100",
+            "stroke": "#4a2410",
+            "strokeWidth": 2.5,
+            "elements": [
+              { "shape": "path", "d": "M 50 18 L 80 32 L 80 56 Q 80 78 50 88 Q 20 78 20 56 L 20 32 Z" },
+              { "shape": "path", "d": "M 36 52 Q 50 38 64 52", "stroke": "#b04a32" },
+              { "shape": "circle", "cx": 50, "cy": 62, "r": 6, "stroke": "#b04a32" }
+            ]
+          }
+        },
+        {
+          "heading": "치료 선택권 보장",
+          "body": "어떤 고액 치료도 망설임 없이 선택할 수 있는 자유",
+          "icon": {
+            "viewBox": "0 0 100 100",
+            "stroke": "#4a2410",
+            "strokeWidth": 2.5,
+            "elements": [
+              { "shape": "path", "d": "M 30 70 L 70 30" },
+              { "shape": "path", "d": "M 70 30 L 70 48" },
+              { "shape": "path", "d": "M 70 30 L 52 30" },
+              { "shape": "path", "d": "M 22 78 L 38 62 L 50 74 L 60 64 L 78 78", "stroke": "#b04a32" },
+              { "shape": "circle", "cx": 50, "cy": 22, "r": 5, "fill": "#b7975a", "stroke": "none" }
+            ]
+          }
+        },
+        {
+          "heading": "장기전 대비",
+          "body": "간병과 장기 치료의 지속 가능성까지 책임",
+          "icon": {
+            "viewBox": "0 0 100 100",
+            "stroke": "#4a2410",
+            "strokeWidth": 2.5,
+            "elements": [
+              { "shape": "rect", "x": 32, "y": 14, "width": 36, "height": 14, "rx": 2 },
+              { "shape": "rect", "x": 32, "y": 72, "width": 36, "height": 14, "rx": 2 },
+              { "shape": "path", "d": "M 36 28 Q 36 50 50 50 Q 64 50 64 72", "stroke": "#b04a32" },
+              { "shape": "path", "d": "M 64 28 Q 64 50 50 50", "stroke": "#b04a32", "strokeDasharray": "3 3" }
+            ]
+          }
+        }
+      ]
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 6
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "陸",
+      "subtitle": "복합 질환의 현실",
+      "pagination": {
+        "current": 7,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "70대 후반의 질병은 수면 아래의\n거대한 연쇄 비용과 싸우는 과정입니다",
+      "emphasis": "거대한 연쇄 비용"
+    },
+    "body": {
+      "icebergVis": {
+        "svg": {
+          "viewBox": "0 0 400 500",
+          "elements": [
+            {
+              "shape": "path",
+              "role": "tip",
+              "d": "M 130 180 L 200 70 L 270 180 L 250 200 L 220 175 L 200 200 L 175 175 Z",
+              "fill": "#d8c08a",
+              "stroke": "#97793e",
+              "strokeWidth": 2
+            },
+            {
+              "shape": "path",
+              "role": "body",
+              "d": "M 130 200 L 90 280 L 110 340 L 160 420 L 220 460 L 290 410 L 320 320 L 310 240 L 270 200 L 250 220 L 220 195 L 200 220 L 175 195 Z",
+              "fill": "#7a4a36",
+              "stroke": "#b7975a",
+              "strokeWidth": 1.5,
+              "opacity": 0.95
+            },
+            {
+              "shape": "path",
+              "role": "facets",
+              "d": "M 200 200 L 200 460 M 130 200 L 200 280 L 270 200 M 200 280 L 110 340 M 200 280 L 290 410",
+              "stroke": "#b7975a",
+              "strokeWidth": 0.8,
+              "opacity": 0.4
+            }
+          ]
+        },
+        "labelTop": {
+          "title": "눈에 보이는 직접 치료비",
+          "sub": "(진단 및 수술 비용)"
+        },
+        "labelBottom": {
+          "title": "숨겨진 장기 연쇄 비용",
+          "items": [
+            "수개월~수년의 간병비",
+            "끝나지 않는 재활 및 반복 통원",
+            "후유장해로 인한 생활비 고갈",
+            "가족(자녀)의 생업 포기 기회비용"
+          ]
+        }
+      },
+      "aside": {
+        "heading": "복합 질환의 현실",
+        "body": "70대 후반에는 단일 질환보다 여러 리스크가 동시에 덮치는 경우가 대다수입니다.",
+        "pairs": [
+          "암 + 심장질환",
+          "암 + 뇌혈관질환",
+          "대형 수술 + 장기 간병"
+        ]
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 7
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "柒",
+      "subtitle": "4개사 강점 조립",
+      "pagination": {
+        "current": 8,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "단일 상품의 한계를 넘어, 4개사의 핵심 강점만을\n조립해 완벽한 보호망을 완성했습니다",
+      "emphasis": "완벽한 보호망"
+    },
+    "body": {
+      "puzzleQuote": {
+        "text": "한 회사의 상품만으로는 수면 아래의 거대한 비용(간병·생활비)과 수면 위의 고액 비용(수술·상급병원)을 동시에 막아낼 수 없습니다. 그래서 우리는 각 분야 1위의 혜택만을 추출하여 하나의 방패로 통합했습니다.",
+        "emphases": [
+          "수면 아래의 거대한 비용(간병·생활비)",
+          "수면 위의 고액 비용(수술·상급병원)",
+          "각 분야 1위의 혜택만"
+        ]
+      },
+      "puzzleCenter": {
+        "svg": {
+          "viewBox": "0 0 100 120",
+          "elements": [
+            {
+              "shape": "path",
+              "role": "shield-base",
+              "d": "M 50 8 L 90 22 L 90 70 Q 90 98 50 112 Q 10 98 10 70 L 10 22 Z",
+              "fill": "#4a2410",
+              "stroke": "#b7975a",
+              "strokeWidth": 1.6
+            },
+            {
+              "shape": "path",
+              "role": "shield-divider",
+              "d": "M 50 8 L 50 112",
+              "stroke": "#b7975a",
+              "strokeWidth": 1
+            },
+            {
+              "shape": "path",
+              "role": "shield-half",
+              "d": "M 50 8 L 90 22 L 90 70 Q 90 98 50 112 Z",
+              "fill": "#7a4a36",
+              "stroke": "#b7975a",
+              "strokeWidth": 1.4
+            },
+            {
+              "shape": "circle",
+              "role": "emblem-bg",
+              "cx": 50, "cy": 56, "r": 11,
+              "fill": "#b7975a"
+            },
+            {
+              "shape": "path",
+              "role": "checkmark",
+              "d": "M 44 56 L 49 62 L 58 50",
+              "stroke": "#4a2410",
+              "strokeWidth": 2.4,
+              "strokeLinecap": "round",
+              "strokeLinejoin": "round"
+            }
+          ]
+        }
+      },
+      "puzzlePieces": [
+        {
+          "position": "tl",
+          "order": 1,
+          "company": "흥국화재",
+          "epithet": "The Vanguard",
+          "role": "암 · 뇌 · 심장 진단비 중심"
+        },
+        {
+          "position": "tr",
+          "order": 2,
+          "company": "라이나생명",
+          "epithet": "The Access Pass",
+          "role": "상급종합병원 고액 치료"
+        },
+        {
+          "position": "bl",
+          "order": 3,
+          "company": "KB손해보험",
+          "epithet": "The Sustaining Engine",
+          "role": "반복 치료 및 생활비 보완"
+        },
+        {
+          "position": "br",
+          "order": 4,
+          "company": "한화생명",
+          "epithet": "The Ultimate Net",
+          "role": "간병 · 입원 · 생활보장"
+        }
+      ]
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 8
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "捌",
+      "subtitle": "전략적 역할 분담",
+      "pagination": {
+        "current": 9,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "각 보험사의 전략적 역할을 철저히 분담한\n통합 진단 매트릭스",
+      "emphasis": "통합 진단 매트릭스"
+    },
+    "body": {
+      "matrixTable": {
+        "columns": ["보험사", "전략적 역할", "핵심 보장 기능", "가족이 얻는 궁극적 혜택"],
+        "rows": [
+          {
+            "company": "흥국화재",
+            "epithet": "The Vanguard",
+            "role": {
+              "main": "초기 방어선",
+              "sub": "치료비 핵심"
+            },
+            "coverage": "진단 즉시 고액 현금\n(암 / 뇌 / 심), 표적항암 · 중입자",
+            "benefit": {
+              "text": "돈 때문에 최신 치료를 포기하는 일이 없어집니다.",
+              "emphasis": "최신 치료를 포기하는 일"
+            }
+          },
+          {
+            "company": "라이나생명",
+            "epithet": "The Access Pass",
+            "role": {
+              "main": "VIP 의료 접근성",
+              "sub": "고액 · 특화"
+            },
+            "coverage": "서울 대형 상급종합병원\n진입 및 고액 특화 치료",
+            "benefit": {
+              "text": "가장 실력 있는 병원과 의사를 망설임 없이 선택합니다.",
+              "emphasis": "가장 실력 있는 병원과 의사"
+            }
+          },
+          {
+            "company": "KB손해보험",
+            "epithet": "The Sustaining Engine",
+            "role": {
+              "main": "장기 지속 엔진",
+              "sub": "반복 · 순환계"
+            },
+            "coverage": "재입원, 반복 항암, 심장 시술\n반복 등 생활비형 보완",
+            "benefit": {
+              "text": "끝나지 않는 긴 치료 과정에서도 가족의 생활비가 방어됩니다.",
+              "emphasis": "가족의 생활비가 방어"
+            }
+          },
+          {
+            "company": "한화생명",
+            "epithet": "The Ultimate Net",
+            "role": {
+              "main": "최종 안전망",
+              "sub": "간병 · 생활보장"
+            },
+            "coverage": "장기 간병비, 후유장해 생활비,\n수술 · 입원 보장",
+            "benefit": {
+              "text": "질병 이후의 삶을 책임져 자녀의 경제적 희생을 막아냅니다.",
+              "emphasis": "자녀의 경제적 희생"
+            }
+          }
+        ]
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 9
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "玖",
+      "subtitle": "The Vanguard · 초기 방어선",
+      "pagination": {
+        "current": 10,
+        "total": 15
+      }
+    },
+    "headRow": {
+      "title": {
+        "text": "흥국화재 — 진단 즉시 압도적인 현금을 투입하여\n치료의 골든타임을 확보합니다",
+        "emphasis": "치료의 골든타임"
+      },
+      "priceBadge": {
+        "label": "MONTHLY",
+        "amount": 104003,
+        "unit": "원"
+      }
+    },
+    "body": {
+      "visPanel": {
+        "label": "Activation Curve",
+        "svg": {
+          "viewBox": "0 0 600 400",
+          "defs": {
+            "gradients": [
+              {
+                "id": "curveGrad",
+                "x1": "0", "x2": "1", "y1": "0", "y2": "0",
+                "stops": [
+                  { "offset": 0, "color": "#d8c08a", "opacity": 0.2 },
+                  { "offset": 1, "color": "#b04a32", "opacity": 1.0 }
+                ]
+              }
+            ]
+          },
+          "elements": [
+            {
+              "shape": "line",
+              "role": "baseline",
+              "x1": 0, "y1": 380, "x2": 600, "y2": 380,
+              "stroke": "#4a2410", "strokeWidth": 2
+            },
+            {
+              "shape": "line",
+              "role": "axis-tick",
+              "x1": 240, "y1": 376, "x2": 240, "y2": 384,
+              "stroke": "#4a2410", "strokeWidth": 2
+            },
+            {
+              "shape": "path",
+              "role": "curve",
+              "d": "M 30 380 Q 240 370 320 340 Q 400 290 460 200 Q 520 100 560 30",
+              "stroke": "url(#curveGrad)",
+              "strokeWidth": 6,
+              "fill": "none"
+            },
+            {
+              "shape": "path",
+              "role": "arrowhead",
+              "d": "M 560 30 L 552 50 L 572 42 Z",
+              "fill": "#b04a32"
+            },
+            {
+              "shape": "path",
+              "role": "shield-icon",
+              "transform": "translate(540 14)",
+              "d": "M 0 0 L 22 6 L 22 22 Q 22 30 11 36 Q 0 30 0 22 Z",
+              "fill": "#b7975a",
+              "stroke": "#97793e",
+              "strokeWidth": 1
+            },
+            {
+              "shape": "circle",
+              "role": "pulse-highlight",
+              "cx": 240, "cy": 380, "r": 9,
+              "fill": "#b04a32"
+            }
+          ]
+        },
+        "labels": [
+          {
+            "text": "암 진단비 : 1,000만 원",
+            "position": { "top": "5%", "right": "24%" }
+          },
+          {
+            "text": "뇌혈관 / 허혈성심질환 : 각 500만 원",
+            "position": { "top": "28%", "right": "32%" }
+          },
+          {
+            "text": "표적항암 : 3,000만 원",
+            "position": { "top": "50%", "right": "40%" }
+          },
+          {
+            "text": "항암약물치료 및 중입자 치료 특화",
+            "position": { "top": "72%", "right": "48%" }
+          }
+        ],
+        "axisLabel": {
+          "text": "진단",
+          "position": { "bottom": "4px", "left": "38%" }
+        }
+      },
+      "strategyPanel": {
+        "heading": "핵심 전략",
+        "items": [
+          {
+            "key": "실제 치료비의 핵심",
+            "desc": "진단 후 폭증하는 초기 의료비를 완벽히 방어합니다."
+          },
+          {
+            "key": "건강보험의 사각지대 해소",
+            "desc": "표적항암, 중입자 치료, 고가 항암약물 등 건강보험만으로 감당하기 힘든 최신 의료 기술을 비용 부담 없이 선택 가능."
+          }
+        ],
+        "quote": "진단 즉시 압도적인 현금이 흘러들어와, 치료의 골든타임을 놓치지 않게 만드는 첫 번째 방어선입니다."
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 10
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "拾",
+      "subtitle": "The Access Pass · VIP 의료 접근성",
+      "pagination": {
+        "current": 11,
+        "total": 15
+      }
+    },
+    "headRow": {
+      "title": {
+        "text": "라이나생명 — 비용 걱정 없이 대한민국 최고\n대형 상급병원 치료를 보장합니다",
+        "emphasis": "대형 상급병원 치료"
+      },
+      "priceBadge": {
+        "label": "MONTHLY",
+        "amount": 142560,
+        "unit": "원",
+        "note": "(설계 기준)"
+      }
+    },
+    "body": {
+      "visPanel": {
+        "label": "Gateway to Top-Tier Hospitals",
+        "svg": {
+          "viewBox": "0 0 400 400",
+          "defs": {
+            "gradients": [
+              {
+                "id": "doorGlow",
+                "x1": "0.5", "y1": "1", "x2": "0.5", "y2": "0",
+                "stops": [
+                  { "offset": 0, "color": "#d8c08a", "opacity": 0.9 },
+                  { "offset": 1, "color": "#f4ecdc", "opacity": 0.0 }
+                ]
+              }
+            ]
+          },
+          "elements": [
+            {
+              "shape": "polygon",
+              "role": "floor-light",
+              "points": "200,380 130,200 270,200",
+              "fill": "url(#doorGlow)",
+              "opacity": 0.85
+            },
+            {
+              "shape": "polygon",
+              "role": "door-left",
+              "points": "50,80 165,140 165,290 50,360",
+              "fill": "#4a2410",
+              "stroke": "#b7975a",
+              "strokeWidth": 2
+            },
+            {
+              "shape": "line", "role": "door-left-line-1",
+              "x1": 80,  "y1": 100, "x2": 80,  "y2": 340,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.6
+            },
+            {
+              "shape": "line", "role": "door-left-line-2",
+              "x1": 110, "y1": 120, "x2": 110, "y2": 320,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.4
+            },
+            {
+              "shape": "line", "role": "door-left-line-3",
+              "x1": 140, "y1": 130, "x2": 140, "y2": 300,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.3
+            },
+            {
+              "shape": "polygon",
+              "role": "door-right",
+              "points": "350,80 235,140 235,290 350,360",
+              "fill": "#4a2410",
+              "stroke": "#b7975a",
+              "strokeWidth": 2
+            },
+            {
+              "shape": "line", "role": "door-right-line-1",
+              "x1": 320, "y1": 100, "x2": 320, "y2": 340,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.6
+            },
+            {
+              "shape": "line", "role": "door-right-line-2",
+              "x1": 290, "y1": 120, "x2": 290, "y2": 320,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.4
+            },
+            {
+              "shape": "line", "role": "door-right-line-3",
+              "x1": 260, "y1": 130, "x2": 260, "y2": 300,
+              "stroke": "#b7975a", "strokeWidth": 1, "opacity": 0.3
+            },
+            {
+              "shape": "line",
+              "role": "door-frame",
+              "x1": 50, "y1": 80, "x2": 350, "y2": 80,
+              "stroke": "#97793e",
+              "strokeWidth": 2
+            },
+            {
+              "shape": "path",
+              "role": "shield-distance",
+              "transform": "translate(186 196)",
+              "d": "M 14 0 L 28 4 L 28 18 Q 28 26 14 32 Q 0 26 0 18 Z",
+              "fill": "#b7975a",
+              "opacity": 0.7
+            }
+          ]
+        }
+      },
+      "strategyPanel": {
+        "heading": "핵심 전략",
+        "items": [
+          {
+            "key": "치료 수준의 수직 상승",
+            "desc": "고령층 중증 질환 발생 시 반드시 필요한 서울 대형병원, 상급종합병원, 대학병원 진입을 위한 재정적 패스포트."
+          },
+          {
+            "key": "고액 치료 특화",
+            "desc": "단순 입원이 아닌, 가장 높은 수준의 의료진과 장비가 투입되는 특화 치료 영역을 전담하여 보완."
+          }
+        ],
+        "quote": "최고의 병원 앞에서 진료비 영수증을 두려워하지 않도록 만드는 안전장치입니다."
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 11
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "拾壹",
+      "subtitle": "The Sustaining Engine · 장기 지속 엔진",
+      "pagination": {
+        "current": 12,
+        "total": 15
+      }
+    },
+    "headRow": {
+      "title": {
+        "text": "KB손해보험 — 반복되는 장기 치료와 재발의 굴레 속에서도\n가족의 생활비를 방어합니다",
+        "emphasis": "가족의 생활비를 방어"
+      },
+      "priceBadge": {
+        "label": "MONTHLY",
+        "amount": 119463,
+        "unit": "원"
+      }
+    },
+    "body": {
+      "visPanel": {
+        "label": "Continuous Care Cycle",
+        "svg": {
+          "viewBox": "0 0 400 400",
+          "defs": {
+            "markers": [
+              {
+                "id": "ah",
+                "viewBox": "0 0 10 10",
+                "refX": 6, "refY": 5,
+                "markerWidth": 6, "markerHeight": 6,
+                "orient": "auto",
+                "path": { "d": "M 0 0 L 10 5 L 0 10 z", "fill": "#4a2410" }
+              },
+              {
+                "id": "ah2",
+                "viewBox": "0 0 10 10",
+                "refX": 6, "refY": 5,
+                "markerWidth": 6, "markerHeight": 6,
+                "orient": "auto",
+                "path": { "d": "M 0 0 L 10 5 L 0 10 z", "fill": "#b7975a" }
+              }
+            ]
+          },
+          "elements": [
+            {
+              "shape": "circle",
+              "role": "outer-ring",
+              "cx": 200, "cy": 200, "r": 140,
+              "fill": "none",
+              "stroke": "#b7975a",
+              "strokeWidth": 3
+            },
+            {
+              "shape": "path",
+              "role": "arc-1",
+              "d": "M 200 60 A 140 140 0 0 1 321 270",
+              "stroke": "#4a2410", "strokeWidth": 6,
+              "fill": "none",
+              "markerEnd": "url(#ah)"
+            },
+            {
+              "shape": "path",
+              "role": "arc-2",
+              "d": "M 321 270 A 140 140 0 0 1 79 270",
+              "stroke": "#b7975a", "strokeWidth": 6,
+              "fill": "none",
+              "markerEnd": "url(#ah2)"
+            },
+            {
+              "shape": "path",
+              "role": "arc-3",
+              "d": "M 79 270 A 140 140 0 0 1 200 60",
+              "stroke": "#4a2410", "strokeWidth": 6,
+              "fill": "none",
+              "markerEnd": "url(#ah)"
+            },
+            {
+              "shape": "group",
+              "role": "shield-center",
+              "transform": "translate(170 170)",
+              "elements": [
+                {
+                  "shape": "path",
+                  "d": "M 30 0 L 60 18 L 60 50 Q 60 60 30 66 Q 0 60 0 50 L 0 18 Z",
+                  "fill": "#4a2410", "stroke": "#b7975a", "strokeWidth": 2
+                },
+                {
+                  "shape": "path",
+                  "d": "M 30 18 L 18 28 L 18 50 L 42 50 L 42 28 Z",
+                  "fill": "#b7975a"
+                },
+                {
+                  "shape": "rect",
+                  "x": 26, "y": 38, "width": 8, "height": 12,
+                  "fill": "#4a2410"
+                }
+              ]
+            },
+            {
+              "shape": "circle",
+              "role": "dot-top",
+              "cx": 200, "cy": 60, "r": 10,
+              "fill": "#4a2410"
+            },
+            {
+              "shape": "circle",
+              "role": "dot-right",
+              "cx": 321, "cy": 270, "r": 10,
+              "fill": "#4a2410"
+            },
+            {
+              "shape": "circle",
+              "role": "dot-left",
+              "cx": 79, "cy": 270, "r": 10,
+              "fill": "#4a2410"
+            }
+          ]
+        },
+        "labels": [
+          {
+            "text": "병원 치료",
+            "position": { "top": "28px", "left": "50px" }
+          },
+          {
+            "text": "재발 및\n재입원",
+            "position": { "top": "56%", "right": "8px" }
+          },
+          {
+            "text": "퇴원 및 요양",
+            "position": { "bottom": "24px", "left": "50%", "transform": "translateX(-50%)" }
+          }
+        ]
+      },
+      "strategyPanel": {
+        "heading": "핵심 전략",
+        "items": [
+          {
+            "key": "'한 번의 치료로 끝나지 않는' 현실 대비",
+            "desc": "재입원, 반복 항암, 장기 통원, 심장 시술 반복 등 지루한 장기전을 지원."
+          },
+          {
+            "key": "순환계 및 생활비 특화",
+            "desc": "단순 1회성 진단비가 아닌, 주요 치료 시마다 발생하는 생활비 공백과 순환계 질환(심장/혈관) 반복 치료에 가장 강력한 구조."
+          }
+        ],
+        "quote": "치료가 길어져도 가족의 통장 잔고가 마르지 않도록 끊임없이 에너지를 공급하는 엔진입니다."
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 12
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "拾貳",
+      "subtitle": "The Ultimate Net · 최종 안전망",
+      "pagination": {
+        "current": 13,
+        "total": 15
+      }
+    },
+    "headRow": {
+      "title": {
+        "text": "한화생명 — 치료 이후 시작되는 긴 간병의 시간,\n자녀의 일상을 지켜내는 든든한 버팀목입니다",
+        "emphasis": "자녀의 일상"
+      },
+      "priceBadge": {
+        "label": "MONTHLY",
+        "amount": 114442,
+        "unit": "원"
+      }
+    },
+    "body": {
+      "layout": "strategy-first",
+      "strategyPanel": {
+        "heading": "핵심 전략",
+        "items": [
+          {
+            "key": "고령층 최대의 공포, '간병비' 해결",
+            "desc": "암 수술 이후 수개월~수년간 이어지는 간병 상황은 치료비보다 더 큰 재앙이 될 수 있습니다."
+          },
+          {
+            "key": "병 이후의 삶 (Life After Illness) 보장",
+            "desc": "장기 입원비, 간병 관련 보장, 수술 보장, 그리고 후유장해 발생 시 가족의 생활을 유지하는 보장 특화."
+          }
+        ],
+        "quote": "단순한 치료비 보장을 넘어, 자녀의 일상과 생업을 지키기 위한 마지막 안전망입니다."
+      },
+      "visPanel": {
+        "label": "For The Family",
+        "type": "text",
+        "statement": {
+          "text": "부모님의 긴 투병으로 인해 자녀가 자신의 생업과 일상을 포기하는 비극을 원천 차단합니다.",
+          "emphasis": "자녀가 자신의 생업과\n일상을 포기하는 비극"
+        },
+        "banner": {
+          "text": "병 이후의 삶 (Life After Illness) — 궁극의 방어선",
+          "emphasis": "궁극의 방어선"
+        }
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 13
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "拾參",
+      "subtitle": "The Zero-Gap Care Journey",
+      "pagination": {
+        "current": 14,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "질병의 발견부터 회복 이후까지, 어떤 순간에도\n4개의 방패가 완벽하게 교차 방어합니다",
+      "emphasis": "완벽하게 교차 방어"
+    },
+    "journeyTag": "— The Zero-Gap Care Journey —",
+    "journey": [
+      {
+        "stage": 1,
+        "heading": "진단 및 초기 대응",
+        "shield": {
+          "num": "STAGE 1",
+          "label": "방패 발동"
+        },
+        "company": "흥국화재",
+        "action": {
+          "text": "고액 진단비 즉시 지급 및 중입자 / 표적항암 치료비 확보.",
+          "emphasis": "중입자 / 표적항암"
+        }
+      },
+      {
+        "stage": 2,
+        "heading": "최고 수준의 치료",
+        "shield": {
+          "num": "STAGE 2",
+          "label": "방패 전환"
+        },
+        "company": "라이나생명",
+        "action": {
+          "text": "상급종합병원 이송 및 특화 치료 병실 입성.",
+          "emphasis": "상급종합병원 이송"
+        }
+      },
+      {
+        "stage": 3,
+        "heading": "장기 반복 치료",
+        "shield": {
+          "num": "STAGE 3",
+          "label": "방패 지속"
+        },
+        "company": "KB손해보험",
+        "action": {
+          "text": "끝없는 재입원과 반복 항암 치료 중에도 가족 생활비 지속 지급.",
+          "emphasis": "가족 생활비 지속 지급."
+        }
+      },
+      {
+        "stage": 4,
+        "heading": "간병 및 일상 회복",
+        "shield": {
+          "num": "STAGE 4",
+          "label": "방패 완성"
+        },
+        "company": "한화생명",
+        "action": {
+          "text": "24시간 간병인 고용 및 후유장해 생활비 지원으로 자녀 생업 보호.",
+          "emphasis": "24시간 간병인 고용"
+        }
+      }
+    ],
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 14
+    }
+  }
+},
+{
+  "page": {
+    "eyebrow": {
+      "seal": "拾肆",
+      "subtitle": "우리가 진짜 지불하는 것",
+      "pagination": {
+        "current": 15,
+        "total": 15
+      }
+    },
+    "title": {
+      "text": "우리가 지불하는 것은 매월의 보험료가 아니라,\n가족이 짊어질 막대한 부담의 소거입니다",
+      "emphasis": "가족이 짊어질 막대한 부담의 소거"
+    },
+    "body": {
+      "balance": {
+        "fulcrum": "⇆",
+        "left": {
+          "label": "PAY",
+          "title": "4개사 통합 플랜의\n월 보험료",
+          "detail": {
+            "amount": 480468,
+            "unit": "원",
+            "text": "월 480,468원의\n예측 가능한 정액 지출"
+          }
+        },
+        "right": {
+          "label": "REMOVE",
+          "title": "가족이 짊어질\n막대한 미래 부담",
+          "detail": {
+            "items": [
+              "수천만 원의 치료비",
+              "기약 없는 간병 굴레",
+              "자녀의 경제적 희생"
+            ]
+          }
+        }
+      },
+      "closingStatement": {
+        "lead": "고객님 연령에서는 '가장 싼 보험'이 아니라",
+        "main": {
+          "text": "'가족의 부담을 가장 확실하게 줄일 수 있는 설계'를 선택해야 합니다.",
+          "emphasis": "가족의 부담을 가장 확실하게 줄일 수 있는 설계"
+        },
+        "closing": {
+          "text": "이 맞춤형 통합 플랜은 추한복 고객님께서 가족을 위해 준비하실 수 있는 가장 위대하고 확실한 사랑의 징표가 될 것입니다.",
+          "emphasis": "가장 위대하고 확실한 사랑의 징표",
+          "emphasisColor": "gold-soft"
+        },
+        "signature": "추한복 고객님께 드리는 약속"
+      }
+    },
+    "footer": {
+      "brand": {
+        "text": "추한복 고객님 맞춤 통합 보장 블루프린트 · ",
+        "emphasis": "4개사 강점 조립형 설계"
+      },
+      "pageNumber": 15
+    }
+  }
+}
+]

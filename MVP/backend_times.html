@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KSR Backend — 기록 DB 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f9f8f4;
+    --bg-sunken: #f3f2ed;
+    --fg: #0a0a0a;
+    --fg-dim: #4a4a48;
+    --fg-faint: #8a8a86;
+    --fg-mute: #b8b6af;
+    --line: #e3e1d8;
+    --accent: #0a1d3a;
+    --gold: #b3893a;
+    --serif: "Cormorant Garamond", serif;
+    --sans: "Inter", "Pretendard", -apple-system, sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg-sunken);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Top bar ─────────────────────────────────── */
+  .bk-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--fg);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 28px;
+    flex-wrap: wrap;
+  }
+  .bk-bar .title {
+    font-family: var(--serif);
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .bk-bar .title .sub {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin-left: 12px;
+  }
+  .bk-bar .status {
+    font-size: 11.5px;
+    color: var(--fg-faint);
+    letter-spacing: 0.03em;
+    margin-left: auto;
+  }
+  .bk-bar .status.dirty { color: var(--gold); }
+  .bk-actions { display: flex; gap: 8px; }
+  .bk-btn {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border: 1px solid var(--fg);
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .bk-btn:hover { background: var(--bg-soft); }
+  .bk-btn.primary { background: var(--fg); color: var(--bg); }
+  .bk-btn.primary:hover { background: var(--accent); }
+
+  /* ── Search bar ──────────────────────────────── */
+  .bk-search {
+    position: sticky;
+    top: 65px;
+    z-index: 90;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 28px;
+    flex-wrap: wrap;
+  }
+  .bk-search input[type=text], .bk-search select {
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .bk-search input[type=text]:focus, .bk-search select:focus {
+    outline: none; border-color: var(--fg); background: #fffdf6;
+  }
+  .bk-search .q { width: 280px; }
+  .bk-search .lbl {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .bk-search .count {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--fg-dim);
+  }
+  .bk-search .count b { color: var(--gold); font-weight: 500; }
+
+  /* ── Intro ───────────────────────────────────── */
+  .bk-intro {
+    font-size: 12px;
+    color: var(--fg-dim);
+    line-height: 1.65;
+    margin: 16px 28px 0;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .bk-intro strong { color: var(--fg); }
+  .bk-intro code {
+    font-family: var(--mono); font-size: 11px;
+    background: var(--bg-sunken); padding: 1px 4px;
+  }
+
+  /* ── Table ───────────────────────────────────── */
+  .table-wrap {
+    margin: 16px 28px 80px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    overflow: auto;
+    max-height: calc(100vh - 240px);
+  }
+  table.recs {
+    border-collapse: collapse;
+    width: max-content;
+    font-size: 12.5px;
+  }
+  table.recs th, table.recs td {
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 0;
+  }
+  table.recs thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--fg);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    padding: 7px 8px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  table.recs td input, table.recs td select {
+    width: 100%;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    padding: 5px 8px;
+    color: var(--fg);
+  }
+  table.recs td input.mono { font-family: var(--mono); }
+  table.recs td input::placeholder { color: var(--fg-mute); }
+  table.recs td input:focus, table.recs td select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: #fffdf6;
+    position: relative;
+    z-index: 1;
+  }
+  td.ev-cell {
+    background: var(--bg-soft);
+    font-size: 11.5px;
+    color: var(--fg-dim);
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+  td.ev-cell select { background: var(--bg); }
+  tr.new td { background: #fffdf3; }
+  tr.deleted td { background: var(--bg-sunken); }
+  tr.deleted td input { color: var(--fg-mute); text-decoration: line-through; }
+  td.del-cell { text-align: center; background: var(--bg-soft); }
+  .del-btn {
+    border: 0; background: transparent; cursor: pointer;
+    font-size: 13px; color: var(--fg-mute); width: 100%; height: 30px;
+  }
+  .del-btn:hover { color: var(--gold); }
+  tr.deleted .del-btn { color: var(--gold); }
+  .empty-row td {
+    padding: 40px; text-align: center;
+    color: var(--fg-faint); font-size: 13px;
+  }
+
+  /* ── Toast ───────────────────────────────────── */
+  .bk-toast {
+    position: fixed;
+    bottom: 26px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--fg); color: var(--bg);
+    font-size: 12px; letter-spacing: 0.05em;
+    padding: 12px 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 200;
+  }
+  .bk-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="bk-bar">
+  <div class="title">KSR Backend<span class="sub">기록 DB 관리</span></div>
+  <div class="status" id="status">불러오는 중…</div>
+  <div class="bk-actions">
+    <button class="bk-btn" id="btn-reset">초기화</button>
+    <button class="bk-btn" id="btn-csv-in">CSV 불러오기</button>
+    <button class="bk-btn" id="btn-csv-out">CSV 내보내기</button>
+    <button class="bk-btn" id="btn-json-out">data.json 내보내기</button>
+    <button class="bk-btn primary" id="btn-save">저장</button>
+  </div>
+</header>
+
+<div class="bk-search">
+  <span class="lbl">검색</span>
+  <input type="text" class="q" id="q" placeholder="선수명 · 기록 · 대회 · 도시…" />
+  <span class="lbl">부문</span>
+  <select id="f-div"><option value="">전체</option><option value="elite">선수부</option><option value="masters">마스터즈</option></select>
+  <span class="lbl">종목</span>
+  <select id="f-ev"><option value="">전체</option></select>
+  <button class="bk-btn" id="btn-add">+ 새 기록</button>
+  <span class="count" id="count">—</span>
+</div>
+
+<div class="bk-intro">
+  현 리더보드 <code>data.json</code>의 모든 기록을 평탄화해 불러옵니다 (6개 시트 중복 제거).
+  <strong>검색</strong>으로 한 기록 또는 한 선수의 전체 기록을 찾아 셀을 직접 수정하고,
+  행 끝의 <strong>×</strong>로 삭제 표시(되돌리기 가능)합니다. <code>기록</code>·<code>작성일</code>은 숫자만 입력해도 자동 정형됩니다.
+  <strong>data.json 내보내기</strong>는 6개 시트를 다시 만들어(시간순 재정렬·순위 재부여) 리더보드용으로,
+  <strong>CSV 내보내기</strong>는 부문·수영장·연령대까지 포함한 평탄 테이블로 출력합니다.
+  <strong>저장</strong>은 작업 상태를 브라우저에 보관합니다.
+</div>
+
+<div class="table-wrap">
+  <table class="recs">
+    <thead><tr id="thead-row"></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<datalist id="dl-div"><option value="elite">선수부</option><option value="masters">마스터즈</option></datalist>
+<datalist id="dl-grp"><option value="adult">성인부</option><option value="high">고등부</option><option value="mid">중등부</option><option value="elem">초등부</option><option value="youth">유년부</option></datalist>
+<datalist id="dl-age">
+  <option value="25-29"></option><option value="30-34"></option><option value="35-39"></option>
+  <option value="40-44"></option><option value="45-49"></option><option value="50-54"></option>
+  <option value="55-59"></option><option value="60-64"></option><option value="65-69"></option>
+  <option value="70-74"></option><option value="75-79"></option><option value="80-84"></option>
+</datalist>
+
+<div class="bk-toast" id="toast">저장되었습니다</div>
+
+<script src="js/data.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const STORE_KEY = 'ksr_times_working_v1';
+  const SHEETS = ['all','elite','masters','adult','elite-adult','masters-adult'];
+
+  // ── 컬럼 정의 ─────────────────────────────────────
+  const COLS = [
+    { f: 'event',     label: '종목',        w: 188 },
+    { f: 'division',  label: '부문',        w: 80,  list: 'dl-div' },
+    { f: 'group',     label: '연령부',      w: 72,  list: 'dl-grp' },
+    { f: 'ageGroup',  label: '연령대',      w: 66,  list: 'dl-age', mono: true },
+    { f: 'rank',      label: '순위',        w: 50,  mono: true },
+    { f: 'name',      label: '선수',        w: 104 },
+    { f: 'time',      label: '기록',        w: 94,  mono: true, ph: '00:00.00' },
+    { f: 'date',      label: '작성일',      w: 104, mono: true, ph: '0000-00-00' },
+    { f: 'year',      label: '연도',        w: 56,  mono: true },
+    { f: 'city',      label: '도시',        w: 80 },
+    { f: 'pool',      label: '수영장',      w: 140 },
+    { f: 'meet',      label: '대회',        w: 140 },
+    { f: 'meet_full', label: '대회 정식명', w: 220 },
+  ];
+
+  const statusEl  = document.getElementById('status');
+  const tbody     = document.getElementById('tbody');
+  const qEl       = document.getElementById('q');
+  const fDivEl    = document.getElementById('f-div');
+  const fEvEl     = document.getElementById('f-ev');
+  const countEl   = document.getElementById('count');
+  const toast     = document.getElementById('toast');
+
+  // ── 종목 메타 수집 ────────────────────────────────
+  const EVENTS = {};                       // eid -> { id, label, gender, stroke, distance, course }
+  function collectEvents(KSR) {
+    SHEETS.forEach(sh => (KSR[sh] || []).forEach(ev => {
+      if (!EVENTS[ev.id]) EVENTS[ev.id] = {
+        id: ev.id, label: ev.label, gender: ev.gender,
+        stroke: ev.stroke, distance: ev.distance, course: ev.course,
+      };
+    }));
+  }
+
+  // ── data.json 평탄화 (6개 시트 중복 제거) ──────────
+  function flatten(KSR) {
+    const byKey = {};
+    const recKey = (ev, r) => `${ev.id}|${r.name}|${r.date}|${r.time}`;
+    SHEETS.forEach(sh => (KSR[sh] || []).forEach(ev => (ev.ranks || []).forEach(r => {
+      const k = recKey(ev, r);
+      if (!byKey[k]) {
+        byKey[k] = {
+          eid: ev.id,
+          name: r.name || '', time: r.time || '', date: r.date || '',
+          rank: r.rank != null ? String(r.rank) : '',
+          city: r.city || '', pool: r.pool || '',
+          meet: r.meet || '', meet_full: r.meet_full || '',
+          ageGroup: r.ageGroup || '',
+          _sheets: {},
+        };
+      }
+      byKey[k]._sheets[sh] = true;
+    })));
+    return Object.values(byKey).map(r => {
+      // 부문·연령부는 모든 관련 시트로 추론 (elite-adult/masters-adult 도 반영)
+      r.division = (r._sheets.elite || r._sheets['elite-adult']) ? 'elite'
+                 : (r._sheets.masters || r._sheets['masters-adult']) ? 'masters' : '';
+      r.group    = (r._sheets.adult || r._sheets['elite-adult'] || r._sheets['masters-adult']) ? 'adult' : '';
+      r.year     = (r.date || '').slice(0, 4);
+      delete r._sheets;
+      return r;
+    });
+  }
+
+  // ── 입력 자동 정형 ────────────────────────────────
+  function normalizeTime(raw) {
+    let d = String(raw).replace(/\D/g, '');
+    if (d.length >= 3 && d.length <= 6) {
+      d = d.padStart(6, '0');
+      return `${d.slice(0,2)}:${d.slice(2,4)}.${d.slice(4)}`;
+    }
+    if (d.length === 7 || d.length === 8) {
+      d = d.padStart(8, '0');
+      return `${d.slice(0,2)}:${d.slice(2,4)}:${d.slice(4,6)}.${d.slice(6)}`;
+    }
+    return String(raw).trim();
+  }
+  function normalizeDate(raw) {
+    const d = String(raw).replace(/\D/g, '');
+    if (d.length === 8) return `${d.slice(0,4)}-${d.slice(4,6)}-${d.slice(6)}`;
+    return String(raw).trim();
+  }
+  function timeToMs(t) {
+    t = String(t || '').trim();
+    let m = t.match(/^(?:(\d+):)?(\d{1,2}):(\d{2})\.(\d{1,2})$/);
+    if (m) {
+      const hh = +(m[1] || 0), mm = +m[2], ss = +m[3], dd = +(m[4].padEnd(2, '0'));
+      return ((hh * 60 + mm) * 60 + ss) * 1000 + dd * 10;
+    }
+    m = t.match(/^(\d{1,2})\.(\d{1,2})$/);
+    if (m) return (+m[1]) * 1000 + (+(m[2].padEnd(2, '0'))) * 10;
+    return Infinity;
+  }
+
+  // ── 헤더 렌더 ─────────────────────────────────────
+  (() => {
+    let h = '';
+    COLS.forEach(c => { h += `<th style="min-width:${c.w}px">${c.label}</th>`; });
+    h += '<th style="min-width:40px"></th>';
+    document.getElementById('thead-row').innerHTML = h;
+  })();
+
+  // ── 행 렌더 ───────────────────────────────────────
+  function esc(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;'); }
+
+  function rowHtml(rec, isNew) {
+    let h = `<tr class="${isNew ? 'new' : ''}" data-eid="${esc(rec.eid)}">`;
+    COLS.forEach(c => {
+      if (c.f === 'event') {
+        if (isNew) {
+          let opts = '<option value="">— 종목 선택 —</option>';
+          Object.values(EVENTS).forEach(ev => {
+            opts += `<option value="${esc(ev.id)}"${ev.id === rec.eid ? ' selected' : ''}>${esc(ev.label)}</option>`;
+          });
+          h += `<td class="ev-cell"><select data-f="event">${opts}</select></td>`;
+        } else {
+          const ev = EVENTS[rec.eid];
+          h += `<td class="ev-cell">${esc(ev ? ev.label : rec.eid)}</td>`;
+        }
+        return;
+      }
+      const v = esc(rec[c.f] || '');
+      const cls = c.mono ? 'mono' : '';
+      const list = c.list ? ` list="${c.list}"` : '';
+      const ph = c.ph ? ` placeholder="${c.ph}"` : '';
+      h += `<td><input type="text" class="${cls}" data-f="${c.f}" value="${v}"${list}${ph} /></td>`;
+    });
+    h += '<td class="del-cell"><button type="button" class="del-btn" title="삭제 표시">✕</button></td>';
+    h += '</tr>';
+    return h;
+  }
+
+  function render(recs) {
+    if (!recs.length) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${COLS.length + 1}">기록이 없습니다.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = recs.map(r => rowHtml(r, false)).join('');
+  }
+
+  // ── 검색 / 필터 ───────────────────────────────────
+  function rowHaystack(tr) {
+    const ev = EVENTS[tr.dataset.eid];
+    let s = (ev ? ev.label : '') + ' ';
+    tr.querySelectorAll('input[data-f]').forEach(i => { s += i.value + ' '; });
+    return s.toLowerCase();
+  }
+  function applyFilter() {
+    const q  = qEl.value.trim().toLowerCase();
+    const dv = fDivEl.value;
+    const ev = fEvEl.value;
+    let n = 0;
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (tr.classList.contains('empty-row')) return;
+      let ok = true;
+      if (q && rowHaystack(tr).indexOf(q) < 0) ok = false;
+      if (ok && dv) {
+        const dInp = tr.querySelector('[data-f="division"]');
+        if (!dInp || dInp.value.trim() !== dv) ok = false;
+      }
+      if (ok && ev && tr.dataset.eid !== ev) ok = false;
+      tr.style.display = ok ? '' : 'none';
+      if (ok) n++;
+    });
+    const total = tbody.querySelectorAll('tr:not(.empty-row)').length;
+    countEl.innerHTML = `<b>${n}</b> / ${total}건`;
+  }
+
+  // ── 종목 필터 채우기 ──────────────────────────────
+  function fillEventFilter() {
+    let h = '<option value="">전체</option>';
+    Object.values(EVENTS)
+      .sort((a, b) => a.label.localeCompare(b.label, 'ko'))
+      .forEach(ev => { h += `<option value="${esc(ev.id)}">${esc(ev.label)}</option>`; });
+    fEvEl.innerHTML = h;
+  }
+
+  // ── 수집 (현재 화면 → 레코드 배열) ────────────────
+  function collect() {
+    const recs = [];
+    tbody.querySelectorAll('tr').forEach(tr => {
+      if (tr.classList.contains('empty-row') || tr.classList.contains('deleted')) return;
+      const rec = { eid: tr.dataset.eid };
+      tr.querySelectorAll('[data-f]').forEach(el => {
+        if (el.dataset.f === 'event') return;
+        rec[el.dataset.f] = el.value.trim();
+      });
+      recs.push(rec);
+    });
+    return recs;
+  }
+
+  // ── 상태 표시 ─────────────────────────────────────
+  let dirty = false;
+  function markDirty() {
+    dirty = true;
+    statusEl.textContent = '저장되지 않은 수정 있음';
+    statusEl.classList.add('dirty');
+  }
+  function markClean(msg) {
+    dirty = false;
+    statusEl.textContent = msg || '동기화됨';
+    statusEl.classList.remove('dirty');
+  }
+  let toastTimer = null;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  // ── data.json 재생성 ──────────────────────────────
+  function regenerate(recs) {
+    const filters = {
+      'all':           () => true,
+      'elite':         r => r.division === 'elite',
+      'masters':       r => r.division === 'masters',
+      'adult':         r => r.group === 'adult',
+      'elite-adult':   r => r.division === 'elite' && r.group === 'adult',
+      'masters-adult': r => r.division === 'masters' && r.group === 'adult',
+    };
+    // 종목별 묶기
+    const byEv = {};
+    recs.forEach(r => {
+      if (!r.eid || !EVENTS[r.eid]) return;
+      (byEv[r.eid] = byEv[r.eid] || []).push(r);
+    });
+    const out = {};
+    SHEETS.forEach(sh => {
+      out[sh] = [];
+      Object.keys(byEv).forEach(eid => {
+        const matched = byEv[eid].filter(filters[sh]);
+        if (!matched.length) return;
+        matched.sort((a, b) => timeToMs(a.time) - timeToMs(b.time));
+        let prevTime = null, prevRank = 0;
+        const ranks = matched.map((r, i) => {
+          let rank = i + 1;
+          if (r.time === prevTime) rank = prevRank;
+          else { prevRank = rank; prevTime = r.time; }
+          const o = { rank, name: r.name, date: r.date, time: r.time, city: r.city };
+          if (r.pool)     o.pool = r.pool;
+          o.meet = r.meet;
+          o.meet_full = r.meet_full;
+          if (r.ageGroup) o.ageGroup = r.ageGroup;
+          return o;
+        });
+        const ev = EVENTS[eid];
+        out[sh].push({
+          label: ev.label, gender: ev.gender, stroke: ev.stroke,
+          distance: ev.distance, course: ev.course, id: ev.id, ranks,
+        });
+      });
+    });
+    return out;
+  }
+
+  function download(filename, text, mime) {
+    const blob = new Blob([text], { type: mime });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function exportJson() {
+    const data = regenerate(collect());
+    download('data.json', JSON.stringify(data, null, 1), 'application/json');
+    showToast('data.json 내보내기 완료 (6개 시트 재생성)');
+  }
+
+  // ── CSV ───────────────────────────────────────────
+  const CSV_COLS = ['eid','division','group','ageGroup','rank','name','time','date','year','city','pool','meet','meet_full'];
+  function csvEscape(v) {
+    v = (v == null) ? '' : String(v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+  function exportCSV() {
+    const recs = collect();
+    let csv = '종목ID,부문,연령부,연령대,순위,선수,기록,작성일,연도,도시,수영장,대회,대회정식명\n';
+    recs.forEach(r => {
+      csv += CSV_COLS.map(c => csvEscape(r[c] || '')).join(',') + '\n';
+    });
+    download('records.csv', '﻿' + csv, 'text/csv;charset=utf-8');
+    showToast(`CSV 내보내기 완료 · ${recs.length}건`);
+  }
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if (c !== '\r') cell += c;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function importCSV(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result).replace(/^﻿/, '');
+      const rows = parseCSV(text);
+      const recs = [];
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r || !r[0] || !r[0].trim()) continue;
+        const rec = {};
+        CSV_COLS.forEach((c, idx) => { rec[c] = (r[idx] || '').trim(); });
+        recs.push(rec);
+      }
+      if (!recs.length) { showToast('CSV에서 읽을 기록이 없습니다'); return; }
+      render(recs);
+      fillEventFilter();
+      applyFilter();
+      markDirty();
+      showToast(`CSV 불러오기 완료 · ${recs.length}건`);
+    };
+    reader.readAsText(file);
+  }
+
+  // ── 저장 / 로드 ───────────────────────────────────
+  function save() {
+    const recs = collect();
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(recs));
+      localStorage.setItem(STORE_KEY + '_ts', new Date().toLocaleString('ko-KR'));
+    } catch (e) {}
+    markClean(`저장됨 · ${recs.length}건`);
+    showToast(`작업 상태 저장 완료 · ${recs.length}건`);
+  }
+  function loadInitial() {
+    const KSR = window.KSR_DATA;
+    if (!KSR) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="${COLS.length + 1}">js/data.js 를 불러오지 못했습니다.</td></tr>`;
+      statusEl.textContent = '데이터 로드 실패';
+      return;
+    }
+    collectEvents(KSR);
+    fillEventFilter();
+    let recs = null;
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) recs = JSON.parse(raw);
+    } catch (e) { recs = null; }
+    if (recs && recs.length) {
+      render(recs);
+      markClean(`작업본 복원 · ${recs.length}건 (마지막 저장: ${localStorage.getItem(STORE_KEY + '_ts') || '—'})`);
+    } else {
+      recs = flatten(KSR);
+      render(recs);
+      markClean(`data.json 로드 · ${recs.length}건`);
+    }
+    applyFilter();
+  }
+  function resetAll() {
+    if (!confirm('작업 내용을 버리고 data.json 원본으로 되돌립니다.')) return;
+    localStorage.removeItem(STORE_KEY);
+    localStorage.removeItem(STORE_KEY + '_ts');
+    const recs = flatten(window.KSR_DATA);
+    render(recs);
+    applyFilter();
+    markClean(`data.json 원본 복원 · ${recs.length}건`);
+    showToast('원본으로 초기화했습니다');
+  }
+
+  // ── 새 기록 추가 ──────────────────────────────────
+  function addRow() {
+    const empty = tbody.querySelector('.empty-row');
+    if (empty) empty.remove();
+    const blank = { eid: fEvEl.value || '', division: '', group: '', ageGroup: '',
+      rank: '', name: '', time: '', date: '', year: '', city: '', pool: '', meet: '', meet_full: '' };
+    tbody.insertAdjacentHTML('afterbegin', rowHtml(blank, true));
+    const tr = tbody.firstElementChild;
+    tr.scrollIntoView({ block: 'center' });
+    const firstInput = tr.querySelector('input[data-f="name"]');
+    if (firstInput) firstInput.focus();
+    markDirty();
+    applyFilter();
+  }
+
+  // ── 이벤트 바인딩 ─────────────────────────────────
+  document.getElementById('btn-save').addEventListener('click', save);
+  document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-json-out').addEventListener('click', exportJson);
+  document.getElementById('btn-csv-out').addEventListener('click', exportCSV);
+  document.getElementById('btn-add').addEventListener('click', addRow);
+
+  const csvFile = document.createElement('input');
+  csvFile.type = 'file';
+  csvFile.accept = '.csv,text/csv';
+  csvFile.style.display = 'none';
+  document.body.appendChild(csvFile);
+  document.getElementById('btn-csv-in').addEventListener('click', () => csvFile.click());
+  csvFile.addEventListener('change', () => {
+    if (csvFile.files && csvFile.files[0]) importCSV(csvFile.files[0]);
+    csvFile.value = '';
+  });
+
+  let filterTimer = null;
+  function scheduleFilter() {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(applyFilter, 120);
+  }
+  qEl.addEventListener('input', scheduleFilter);
+  fDivEl.addEventListener('change', applyFilter);
+  fEvEl.addEventListener('change', applyFilter);
+
+  tbody.addEventListener('input', (e) => {
+    if (e.target.matches('[data-f]')) markDirty();
+  });
+  tbody.addEventListener('change', (e) => {
+    const el = e.target;
+    if (!el.matches('[data-f]')) return;
+    if (el.dataset.f === 'time') el.value = normalizeTime(el.value);
+    else if (el.dataset.f === 'date') {
+      el.value = normalizeDate(el.value);
+      const yr = el.closest('tr').querySelector('[data-f="year"]');
+      if (yr && !yr.value.trim() && /^\d{4}-/.test(el.value)) yr.value = el.value.slice(0, 4);
+    } else if (el.dataset.f === 'event') {
+      el.closest('tr').dataset.eid = el.value;
+    }
+  });
+  tbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('.del-btn');
+    if (!btn) return;
+    btn.closest('tr').classList.toggle('deleted');
+    markDirty();
+    applyFilter();
+  });
+  window.addEventListener('beforeunload', (e) => {
+    if (dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  loadInitial();
+})();
+</script>
+
+</body>
+</html>
